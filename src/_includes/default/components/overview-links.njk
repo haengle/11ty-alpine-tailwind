@@ -1,0 +1,39 @@
+{% set teleportPos = data.options.teleportPosition.value %}
+{% if teleportPos == 'hero' or teleportPos == 'nav' %}
+<template x-teleport="#main">
+{% endif %}
+    <div class="nav-overview-outer 
+    {{ data.options.customClass.value }}
+    {{ 'below-nav' if teleportPos == 'nav' }}
+    {{ 'below-hero' if teleportPos == 'hero' }}" 
+        x-data="scrollspy" 
+        x-init="watchScroll()"
+        {% if teleportPos == 'hero' or teleportPos == 'nav' %}
+        aria-hidden="true"
+        {% endif %}
+        >
+        <nav class="nav-overview" aria-label="overview" x-data="dropdown" x-ref="overview">
+            <button class="overview-toggler overview-expanded:!hidden" 
+            type="button" 
+            aria-controls="overviewDropdown" 
+            x-bind="button"
+            aria-haspopup="true">
+                On this page <i class="{{ theme.siteHeader.navbarIcon }}"></i>
+            </button>
+        <ul x-bind="content" class="overview-expanded:!flex">
+
+            {%- for link in data.fields.links.value -%} 
+            <li class="nav-overview_item">
+                <a class="nav-overview_item_link" 
+                href="#{{ link.fields.anchor.value | default("") }}" 
+                x-bind="nav">
+                    <span>{{ link.fields.name.value | safe }}</span>
+                </a>
+            </li>
+            {%- endfor -%}
+        </ul>
+        </nav>
+    </div>
+{% if teleportPos == 'hero' or teleportPos == 'nav' %}
+</template>
+{% endif %}

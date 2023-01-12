@@ -1,0 +1,46 @@
+{% if pagination.pages | length > 1 %}
+<nav aria-label="Blog pagination" class="nav-pagination">
+  <ul>
+    <li class="nav-pagination_item">
+        {% if page.url != pagination.href.first %}
+        <a href="{{ pagination.href.first }}" 
+        aria-label="first page"
+        class="nav-pagination_link arrow"
+        >&laquo;</a>{% else %}
+        <span class="inactive">&laquo;</span>{% endif %}</li>
+    <li class="nav-pagination_item">{% if pagination.href.previous %}
+        <a href="{{ pagination.href.previous }}" 
+        aria-label="previous page"
+        class="nav-pagination_link arrow">&lsaquo;</a>
+        {% else %}
+        <span class="inactive">&lsaquo;</span>
+        {% endif %}</li>
+{%- for pageEntry in pagination.pages %}
+   {% if pageEntry | length > 1 %}
+    <li class="nav-pagination_item">
+        <a href="{{ pagination.hrefs[ loop.index0 ] }}" 
+        class="nav-pagination_link {{ 'active' if page.url == pagination.hrefs[ loop.index0 ] }}"
+        {% if page.url == pagination.hrefs[ loop.index0 ] %} 
+        aria-current="page"
+        {% endif %}>
+        {{ loop.index }}</a></li>
+    {% endif %}
+{%- endfor %}
+    <li class="nav-pagination_item">
+        {% if pagination.href.next %}
+        <a class="nav-pagination_link arrow" 
+        href="{{ pagination.href.next }}"
+        aria-label="next page">&rsaquo;</a>
+        {% else %}
+        <span class="inactive">&rsaquo;</span>{% endif %}</li>
+    <li class="nav-pagination_item">
+        {% if page.url != pagination.href.last %}
+        <a class="nav-pagination_link arrow" 
+        href="{{ pagination.href.last }}" 
+        aria-label="last page">
+        &raquo;</a>
+        {% else %}
+        <span class="inactive">&raquo;</span>{% endif %}</li>
+  </ul>
+</nav>
+{% endif %}

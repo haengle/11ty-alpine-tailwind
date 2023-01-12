@@ -1,0 +1,26 @@
+{% extends "default/layouts/default.njk" %}
+
+{% set placeholderForm %}
+  {% include 'default/elements/form-rfi.njk' %}
+{% endset %}
+
+{% from './macros/template.njk' import template with context %}
+
+{% block layoutContent %}
+
+{% include 'default/elements/include-header.njk' ignore missing %}
+ 
+
+<main id="main" tabindex="-1" x-bind="main" class="main" x-cloak> 
+
+
+    <section class="blog-wrapper">
+
+    {% include 'default/elements/blog-detail.njk' ignore missing %}
+
+    </section>
+</main>
+
+{% include 'default/elements/include-footer.njk' ignore missing %}
+
+{% endblock %}

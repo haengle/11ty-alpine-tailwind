@@ -1,0 +1,125 @@
+{% set filterId = 'filter-' | uniqueAlphaKey %}
+{% set defaultIndex = 'tab-1' %}
+{% set defaultContent = 'content-1' %}
+{% set defaultText = 'Choose One' %}
+
+<div class="
+    {{ 'toggle-filter-outer section' if not isInner }}
+    {{ data.options.customClass.value }}">
+
+   {% if data.options.hideTitle.value == false %}
+      <h2 class="
+      {{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+    <div class="{{ 'text-center' if data.options.centerTitle.value }}
+    {{ 'text-white' if data.options.isWhite.value }}">
+    {{ data.fields.intro.value | safe }}
+    </div>
+
+    {% for item in data.fields.items.value %}
+        {% if item.options.isSelected.value %}
+            {% set defaultIndex = 'tab-' ~ loop.index %}
+            {% set defaultContent = 'content-' ~ loop.index %}
+            {% set defaultText = item.fields.itemTitle.value %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="toggle-dropdown-wrapper 
+        {{ 'toggle-dropdown-wrapper--default' if data.options.theme.value == 'default' }}
+        {{ 'toggle-dropdown-wrapper--large' if data.options.theme.value == 'large' }}
+        {{ 'toggle-dropdown-wrapper--small' if data.options.theme.value == 'small' }}
+        {{ 'white' if data.options.isWhite.value }}
+        {{ 'brand' if data.options.isBrand.value }}
+        {{ data.options.customClass.value }}
+        "
+        x-data="{ 
+            tab: '{{ defaultIndex }}',
+            defaultText: '{{ defaultText }}',
+            selectedContent: '{{ defaultContent }}',
+            
+            dropdownSelect(index) {
+                this.isVisible = false;
+                this.defaultText = this.$event.target.innerText;
+                this.selectedContent = 'content-'+index;
+            }
+        }"
+        >
+
+
+        <div x-data="dropdown">
+            <div class="toggle-dropdown-label hidden" 
+            id="{{ filterId }}" x-text="defaultText"></div>
+
+            <div class="toggle-dropdown-select
+            {{ 'mx-auto' if data.options.centerToggle.value }}">
+                <button 
+                    class="toggle-dropdown-listbox-button" 
+                    aria-haspopup="listbox" 
+                    aria-labelledby="{{ filterId }}" 
+                    x-bind="button">
+                
+                <div class="toggle-dropdown-default-value" x-text="defaultText"></div>
+                <i class="far fa-chevron-down"></i>
+            </button>
+
+            <ul class="toggle-dropdown-listbox" 
+                role="listbox" 
+                id="{{ filterId }}-list" 
+                tabindex="-1" 
+                x-bind="content">
+            
+            {% for item in data.fields.items.value %}
+                <li class="toggle-dropdown-option" 
+                    id="{{ filterId }}-option{{ loop.index }}" 
+                    role="option">
+                    <button 
+                        class="toggle-dropdown-option_btn" 
+                        @click="dropdownSelect( {{ loop.index }} )"
+                        data-hash="{{ item.fields.itemTitle.value | slugify }}"
+                        x-init="$nextTick(() => { 
+                            let tabTarget = window.location.hash.substring(1);
+                            let dataHash = $el.dataset.hash;
+                            let offsetCalc = headerHeight + 60;
+                            if (tabTarget && dataHash && dataHash === tabTarget) {
+                                $el.click();
+                                $scroll($el, {offset: offsetCalc})
+                            }
+                        })"
+                        >
+                    {{ item.fields.itemTitle.value }}
+                    </button>
+                </li>       
+            {% endfor %}
+            </ul>
+        </div>
+
+        <div class="
+            toggle-dropdown-content-wrapper 
+            {{ 'text-white' if data.options.isWhite.value }}">
+
+            {% for item in data.fields.items.value %}
+            
+                {% set itemId = filterId + '-' + loop.index %}
+
+                <div 
+                x-show="selectedContent === 'content-{{ loop.index }}'" 
+                :aria-selected="selectedContent === 'content-{{ loop.index }}' ? 'true' : 'false'">
+                    
+                    {{ item.fields.content.value | safe }}
+
+                    {% set otherComponents = item.fields.components.value %}
+
+                    {% for key, value in otherComponents %}
+                        {% set isInner = true %}
+                        {% set data = value %}
+                        {% include '' + value.model.directory + '/' + value.model.type + '/' + value.model.name | lower + '.njk' ignore missing %}
+                    {% endfor %}
+                    
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    </div>
+</div>

@@ -1,0 +1,229 @@
+{% if (showSidebar | isUndefined) %}
+  {% set showSidebar = false %}
+{% endif %}
+
+{% from 'default/elements/button.njk' import button with context %}
+
+{% set navPos = data.options.navigationPosition.value %}
+{% set imageTheme = data.options.imageTheme.value %}
+{% set showSidebar = true %}
+
+{% if data.fields.sidebarContent.value == 'none' %}
+{% set showSidebar = false %}
+{% endif %}
+<div class="
+    hero-wrapper 
+    hero-slider
+    {{ data.options.customClass.value }}">
+
+     {% if not data.options.disablePagination.value %}
+    <div class="swiper-pagination"></div>
+    {% endif %}
+    {% if not data.options.disableNavigation.value %}
+       <div class="swiper-navigation-wrapper 
+        {{ 'swiper-navigation--default' if navPos == 'default' }}
+        {{ 'swiper-navigation--left' if navPos == 'left' }}
+        {{ 'swiper-navigation--center' if navPos == 'center' }}
+        {{ 'swiper-navigation--bottom' if navPos == 'bottom' }}
+        {{ 'swiper-navigation--bottom-center' if navPos == 'bottom-center' }}
+        ">
+        <div class="swiper-button-prev">
+            <i class="far fa-chevron-left"></i>
+        </div>
+        <div class="swiper-button-next">
+            <i class="far fa-chevron-right"></i>
+        </div>
+       </div>
+    {% endif %}
+
+     <div 
+          class="hero 
+                 {{ 'hero--image-default' if imageTheme == 'default' }} 
+                 {{ 'hero--image-half-left' if imageTheme == 'half-left' }} 
+                 {{ 'hero--image-half-right' if imageTheme == 'half-right' }} 
+                 {{ 'hero--image-twothirds-left' if imageTheme == 'twothirds-left' }} 
+                 {{ 'hero--image-twothirds-right' if imageTheme == 'twothirds-right' }} 
+                 {{ 'hero--image-stacked' if imageTheme == 'stacked' }} 
+                 {{ 'hero--image-stacked-bottom' if imageTheme == 'stacked-bottom' }} 
+                 {{ 'hero--image-behind-header' if imageTheme == 'behind-header' }} 
+
+                 {{ 'content-default' if data.options.contentHorizontalPosition.value == 'default' }}
+                 {{ 'content-left' if data.options.contentHorizontalPosition.value == 'left' }}
+                 {{ 'content-right' if data.options.contentHorizontalPosition.value == 'right' }}
+                 
+                 {{ 'content-v-default' if data.options.contentVerticalPosition.value == 'default' }}
+                 {{ 'content-v-top' if data.options.contentVerticalPosition.value == 'top' }}
+                 {{ 'content-v-bottom' if data.options.contentVerticalPosition.value == 'bottom' }}
+                
+                 {{ 'has-sidebar' if showSidebar }}
+
+                 {{ 'sidebar-default' if data.options.sidebarTheme.value == 'default' | default('sidebar-none') }}
+                 {{ 'sidebar-box' if data.options.sidebarTheme.value == 'box' }}
+                 {{ 'sidebar-square' if data.options.sidebarTheme.value == 'square' }}
+                 {{ 'sidebar-box-overhang' if data.options.sidebarTheme.value == 'box-overhang' }}
+                 {{ 'sidebar-stacked flex-wrap' if data.options.sidebarTheme.value == 'stacked' }}
+                 {{ 'sidebar-brand' if data.options.sidebarBrand.value }}
+                 {{ 'downstream' if data.options.isDownstream.value }}" 
+          x-ref="hero">
+    
+    <div class="swiper" 
+     x-carousel.horizontal="1">
+
+    <div class="swiper-wrapper">
+    {% for slide in data.fields.slides.value %}
+
+       <div class="swiper-slide">
+
+       
+        {% if (imageTheme !='stacked') and (imageTheme != 'stacked-bottom')  %}
+            <div 
+              class="hero-img-wrapper 
+                    {{ 'hero-img-wrapper-default' if imageTheme == 'default' }} 
+                    {{ 'hero-img-wrapper-half-left' if imageTheme == 'half-left' }} 
+                    {{ 'hero-img-wrapper-half-right' if imageTheme == 'half-right' }} 
+                    {{ 'hero-img-wrapper-twothirds-left' if imageTheme == 'twothirds-left' }} 
+                    {{ 'hero-img-wrapper-twothirds-right' if imageTheme == 'twothirds-right' }} 
+                    {{ 'hero-img-wrapper-stacked' if imageTheme == 'stacked' }} 
+                    {{ 'hero-img-wrapper-stacked-bottom' if imageTheme == 'stacked-bottom' }} 
+                    {{ 'hero-img-wrapper-behind-header' if imageTheme == 'behind-header' }} 
+              
+                    {% if slide.fields.image.value %}
+                      {% if (imageTheme == 'default') or (imageTheme == 'behind-header') %} 
+                        fw-wrapper overlay overlay-black_75 
+                      {% endif %}
+                      {% if (data.options.contentHorizontalPosition.value == 'left') and (showSidebar == false) %}
+                        md:overlay-gradient_left-black_transparent
+                      {% endif %}
+                      {% if data.options.contentHorizontalPosition.value == 'right' %}
+                        md:overlay-gradient_right-black_transparent
+                      {% endif %}
+                      {% if (imageTheme == 'half-left') or (imageTheme == 'half-right') 
+                      or (imageTheme == 'twothirds-left') or (imageTheme == 'twothirds-left') %}
+                        w-screen !h-160 md:!h-full md:fw-wrapper
+                      {% endif %}
+                  {% else %}
+                    fw-wrapper 
+                  {% endif %}
+            ">
+
+              <div class="bg-image
+                  {% if imageTheme == 'half-left' %}
+                    md:bg-image_50vw_left
+                  {% endif %}
+                   {% if imageTheme == 'half-right' %}
+                    md:bg-image_50vw_right
+                  {% endif %}
+                  {% if imageTheme == 'twothirds-left' %}
+                   md:bg-image_50vw_left lg:bg-image_66vw_left
+                  {% endif %}
+                  {% if imageTheme == 'twothirds-right' %}
+                   md:bg-image_50vw_right lg:bg-image_66vw_right
+                  {% endif %}"
+                  style="background-color: var(--hero-solid-bg);">
+
+          {% if slide.fields.image.value %}
+                   <img 
+                      {% if (imageTheme == 'half-left') or (imageTheme == 'half-right') %}
+                        srcset="{{ slide.fields.image.value | getAssetUrl }}?w=800&max-h=800&fit=crop&auto=format 800w,
+                            {{ slide.fields.image.value | getAssetUrl }}?w=1600&max-h=800&fit=crop&auto=format 1600w,
+                            {{ slide.fields.image.value | getAssetUrl }}?w=640&max-h=400&fit=crop&auto=format 640w"
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                      {% elif (imageTheme == 'twothirds-left') or (imageTheme == 'twothirds-right') %}
+                        srcset="{{ slide.fields.image.value | getAssetUrl }}?w=1200&max-h=800&fit=crop&auto=format 1200w,
+                            {{ slide.fields.image.value | getAssetUrl }}?w=2400&max-h=800&fit=crop&auto=format 2400w,
+                            {{ slide.fields.image.value | getAssetUrl }}?w=640&max-h=400&fit=crop&auto=format 640w"
+                        sizes="(min-width: 1024px) 66vw, 100vw"
+                      {% elif (imageTheme == 'default') or (imageTheme == 'behind-header') %}
+                        srcset="{{ slide.fields.image.value | getAssetUrl }}?w=1600&max-h=800&fit=crop&auto=format 1600w,
+                            {{ slide.fields.image.value | getAssetUrl }}?w=3200&max-h=1600&fit=crop&auto=format 3200w,
+                            {{ slide.fields.image.value | getAssetUrl }}?w=640&max-h=400&fit=crop&auto=format 640w"
+                        sizes="100vw"
+                      {% endif %}
+                    src="{{ slide.fields.image.value | getAssetUrl }}?w=640&fit=crop&auto=format"
+                    alt="{{ slide.fields.image.value.description|default(" ") }}">
+        {% endif %}
+                  </div>
+            </div>
+            {% endif %}
+            <div class="hero-content 
+                      {{ 'hero-content--default' if data.options.contentHorizontalPosition.value == 'default' }}
+                      {{ 'hero-content--left' if data.options.contentHorizontalPosition.value == 'left' }}
+                      {{ 'hero-content--right' if data.options.contentHorizontalPosition.value == 'right' }}">
+              {% if (imageTheme == 'stacked') or (imageTheme == 'stacked-bottom') %}
+                    <div class="hero-img-wrapper 
+                              {{ 'hero--image-stacked' if imageTheme == 'stacked' }} 
+                              {{ 'hero--image-stacked-bottom' if imageTheme == 'stacked-bottom' }}">
+                      <div class="bg-image"> 
+                      {% if slide.fields.image.value %}
+                        <img 
+                          srcset="
+                              {{ slide.fields.image.value | getAssetUrl }}?w=1600&max-h=600&fit=crop&auto=format 1600w,
+                              {{ slide.fields.image.value | getAssetUrl }}?w=3200&max-h=1200&fit=crop&auto=format 3200w,
+                              {{ slide.fields.image.value | getAssetUrl }}?w=640&max-h=300&fit=crop&auto=format 640w"
+                          src="{{ slide.fields.image.value | getAssetUrl }}?w=640&max-h=300&fit=crop&auto=format"
+                          alt="{{ slide.fields.image.value.description|default(" ") }}">
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% endif %}
+
+              <div class="hero-content-wrapper 
+                    {{ 'text-center' if data.options.textAlignment.value == 'default' }} 
+                    {{ 'text-right' if data.options.textAlignment.value == 'right' }} 
+                    {{ 'text-left' if data.options.textAlignment.value == 'left' }}">
+                <h1>{{ slide.fields.title.value | safe }}</h1>
+                {% if slide.fields.subtitle.value %}
+                  <h2>{{ slide.fields.subtitle.value | safe }}</h2>
+                {% endif %}
+                {% if slide.fields.description.value %}
+                  <p>{{ slide.fields.description.value | safe }}</p>
+                {% endif %}
+                {% if slide.fields.buttons.value | length %}
+                  <div class="hero-buttons">
+                  {% for btn in slide.fields.buttons.value %}
+                     {{ button(btn) }}
+                  {% endfor %}
+                  </div>
+                {% endif %}
+              {% if data.options.showDownArrow.value == true %}
+                 <button class="btn-scroll-down" 
+                  aria-hidden="true" 
+                  tabindex="-1" 
+                  @click="$scroll($refs.scrollTarget, {offset: $refs.navbar.offsetHeight})">
+                      <i class="fal fa-arrow-down-long"></i>
+                  </button>
+              {% endif %}
+              </div>
+            </div>
+        </div>
+        {% endfor %}
+</div>
+</div>
+            {% if showSidebar %}
+            <div class="hero-sidebar 
+                      {{ 'sidebar-default' if data.options.sidebarTheme.value == 'default' }}
+                      {{ 'sidebar-box' if data.options.sidebarTheme.value == 'box' }}
+                      {{ 'sidebar-square' if data.options.sidebarTheme.value == 'square' }}
+                      {{ 'sidebar-box-overhang' if data.options.sidebarTheme.value == 'box-overhang' }}
+                      {{ 'sidebar-brand' if data.options.sidebarBrand.value }}
+                      {{ 'sidebar-stacked' if data.options.sidebarTheme.value == 'stacked' }}">
+              <div class="hero-sidebar-content
+              {{ 'two-cols' if data.options.sidebarFormColumns.value == 'two' }}">
+                {% if data.fields.sidebarContent.value == "custom" %}
+                  {{ data.fields.sidebarCustomText.value | safe }}
+                {% endif %}
+                {% if 'form' in data.fields.sidebarContent.value %}
+                  {% if data.fields.sidebarFormTitle.value !== "" %}
+                    {% set formTitle = data.fields.sidebarFormTitle.value %}
+                  {% endif %}
+                  {% if data.fields.sidebarFormCustom.value !== "" %} 
+                      {% set formDataSrc = theme[data.fields.sidebarFormCustom.value] %}
+                  {% endif %} 
+                  {% include 'default/elements/form-rfi.njk' %}
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+<div x-ref="scrollTarget"></div>

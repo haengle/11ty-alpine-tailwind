@@ -1,0 +1,141 @@
+{% set accordionIcon = theme.options.components.accordion.icon.classList | default('far fa-chevron-down') %}
+{% set accordionIconActive = theme.options.components.accordion.icon.activeClassList | default('far fa-chevron-up') %}
+{% set faqSchema = data.options.faqSchema.value %}
+{% set courseSchema = data.options.courseSchema.value %}
+
+{% if data.fields.items.value | length %}
+<section class="
+{{ 'accordion-outer section' if not isInner }} 
+{{ data.options.customClass.value }}">
+
+    {% if data.options.hideTitle.value == false %}
+      <{{ 'h2' if not isInner else 'h3' }} class="{{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">
+      {{ data.fields.title.value | safe }}
+      </{{ 'h2' if not isInner else 'h3' }}>
+    {% endif %}
+
+    {% if data.fields.intro.value %}
+    <div class="accordion-intro
+    {{ 'text-white' if data.options.isWhite.value }}">
+    {{ data.fields.intro.value | safe }}
+    </div>
+    {% endif %}
+
+    <div class="accordion 
+    {{ 'accordion--default' if data.options.theme.value == 'default' }} 
+    {{ 'accordion--underline' if data.options.theme.value == 'underline' }} 
+    {{ 'white' if data.options.isWhite.value }}
+    {{ data.options.customClass.value }}
+    {{ 'mx-auto' if not isInner }}
+    max-w-screen-lg w-full"
+    {% if faqSchema %}
+        itemscope="itemscope"
+        itemtype="https://schema.org/FAQPage"
+    {% endif %}>
+        {% for item in data.fields.items.value %}
+        
+            {% set itemId = 'tab-' | uniqueAlphaKey %}
+            
+            <div class="accordion-item 
+            {{ 'accordion-item--default' if data.options.theme.value == 'default' }} 
+            {{ 'accordion-item--underline' if data.options.theme.value == 'underline' }} 
+            {{ 'white' if data.options.isWhite.value }}"
+                x-data="accordion"
+                {% if courseSchema %}
+                    itemscope="itemscope" 
+                    itemprop="mainEntity" 
+                    itemtype="https://schema.org/Course"
+                {% endif %}
+                {% if faqSchema %}
+                    itemscope="itemscope" 
+                    itemprop="mainEntity" 
+                    itemtype="https://schema.org/Question"
+                {% endif %}
+                >
+
+                {% if courseSchema %}
+                <div aria-hidden="true"
+                 itemprop="provider" 
+                 itemtype="https://schema.org/Organization" 
+                 itemscope="itemscope" class="hidden">
+                    <span aria-hidden="true" 
+                    itemprop="name" 
+                    class="hidden">
+                    {{ theme.site.siteName }} Online Programs
+                    </span>
+                    <span aria-hidden="true" 
+                    itemprop="sameAs" 
+                    class="hidden">{{ build.url }}</span>
+                 </div>
+                {% endif %}
+
+                <div class="accordion-header 
+                {{ 'accordion-header--default' if data.options.theme.value == 'default' }} 
+                {{ 'accordion-header--underline' if data.options.theme.value == 'underline' }} 
+                {{ 'white' if data.options.isWhite.value }}">
+
+                    <button class="accordion-btn"
+                        x-bind="button"
+                        id="{{ itemId }}"
+                        aria-controls="{{ itemId }}-content"
+                        data-hash="{{ item.fields.itemTitle.value | slugify }}"
+                        x-init="$nextTick(() => { 
+                            let accTarget = window.location.hash.substring(1);
+                            let dataHash = $el.dataset.hash;
+                            let offsetCalc = headerHeight + 60;
+                            if (accTarget && dataHash && dataHash === accTarget) {
+                                $el.click();
+                                $scroll($el, {offset: offsetCalc})
+                            }
+                        })">
+
+                        <span
+                        {% if (courseSchema) 
+                            or (faqSchema) %}
+                        itemprop="name"
+                        {% endif %}>{{item.fields.itemTitle.value | safe}}</span>
+
+                        <i class="{{ accordionIcon }}" x-show="!isActive"></i>
+                        <i class="{{ accordionIconActive }}" x-show="isActive"></i>
+                    </button>
+                </div>
+
+                <div class="accordion-content 
+                {{ 'accordion-content--default' if data.options.theme.value == 'default' }} 
+                {{ 'accordion-content--underline' if data.options.theme.value == 'underline' }} 
+                {{ 'white' if data.options.isWhite.value }}"
+                    x-bind="content"
+                    id="{{ itemId }}-content"
+                    aria-labelledby="{{ itemId }}"
+                    role="region"
+                    {% if faqSchema %}
+                        itemscope="itemscope" 
+                        itemprop="acceptedAnswer" 
+                        itemtype="https://schema.org/Answer"
+                    {% endif %}
+                    >
+
+                    <div class="accordion-body"
+                    {% if courseSchema %}
+                    itemprop="description"
+                    {% endif %}
+                    {% if faqSchema %}
+                    itemprop="text"
+                    {% endif %}>
+                        {{ item.fields.content.value | safe }}
+
+                        {% set otherComponents = item.fields.components.value %}
+
+                        {% for key, value in otherComponents %}
+                            {% set isInner = true %}
+                            {% set data = value %}
+                            {% include '' + value.model.directory + '/' + value.model.type + '/' + value.model.name | lower + '.njk' ignore missing %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+</section>

@@ -1,0 +1,77 @@
+{% set sliderDir = data.options.direction.value | default("horizontal") %}
+{% if not sliderDir %}
+{% set sliderDir = 'horizontal' %}
+{% endif %}
+<div class="timeline-outer carousel-outer">
+ {% if data.options.hideTitle.value == false %} 
+        <h2 class="{{ 'text-white' if data.options.isWhite.value }}
+              relative
+            {{ 'text-center' if data.options.centerTitle.value }}">
+            {{ data.fields.title.value | safe }}
+        </h2>
+ {% endif %} 
+<div class="carousel 
+            swiper 
+            timeline 
+            {{ 'white' if data.options.isWhite.value }} 
+            {{ data.options.customClass.value }}" 
+    {% if sliderDir == 'vertical' %}
+        x-carousel.vertical="{{ data.fields.view.value }}"
+    {% else %}
+        x-carousel.horizontal="{{ data.fields.view.value }}"
+    {% endif %}>
+
+    {% set navPos = data.options.navigationPosition.value %}
+
+    {% if not data.options.disablePagination.value %}
+        <div class="swiper-pagination"></div>
+    {% endif %}
+    {% if not data.options.disableNavigation.value %}
+       <div class="swiper-navigation-wrapper 
+        {{ 'swiper-navigation--default' if navPos == 'default' }}
+        {{ 'swiper-navigation--left' if navPos == 'left' }}
+        {{ 'swiper-navigation--center' if navPos == 'center' }}
+        {{ 'swiper-navigation--bottom' if navPos == 'bottom' }}
+        {{ 'swiper-navigation--bottom-center' if navPos == 'bottom-center' }}
+        ">
+        <div class="swiper-button-prev">
+            <i class="far fa-chevron-left"></i>
+        </div>
+        <div class="swiper-button-next">
+            <i class="far fa-chevron-right"></i>
+        </div>
+       </div>
+    {% endif %}
+    
+    <div class="carousel-wrapper swiper-wrapper timeline-wrapper">
+        {% for item in data.fields.dateItems.value %}
+            <div class="swiper-slide">
+
+            <div class="date date--default
+                {{ 'white' if data.options.isWhite.value }}
+                ">
+            <div class="date-content-wrapper">
+                <h4 class="date-string {{ 'past' if item.fields.isPast.value }}">
+                {% if item.fields.customDate.value %}
+                    {{ item.fields.customDate.value | safe }}
+                {% else %}
+                    {{ item.fields.date.value.datetime | prettyDate }}
+                {% endif %}
+                </h4>
+              
+                    <div class="date-title {{ 'past' if item.fields.isPast.value }}">
+                    {{ item.fields.title.value | safe }}
+                    </div>
+                
+                    {% if item.fields.disclaimer.value %}
+                    <p class="date-desc {{ 'past' if item.fields.isPast.value }}">
+                    {{ item.fields.disclaimer.value | safe }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            </div>
+        {% endfor %}
+    </div>
+  </div>
+</div>

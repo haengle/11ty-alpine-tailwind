@@ -1,0 +1,42 @@
+{% from '../elements/button.njk' import button with context %}
+   
+   <section class="text-block-outer
+    {{ 'section' if not isInner }} 
+    {{ data.options.customSectionBackground.value }}
+    {{ data.options.customClass.value }}
+    {{ 'bg-default' if data.options.contentBackground.value == 'bg-default' }}
+    {{ 'bg-primary' if data.options.contentBackground.value == 'bg-primary' }}
+    {{ 'bg-secondary' if data.options.contentBackground.value == 'bg-secondary' }}
+    {{ 'bg-custom' if data.options.contentBackground.value == 'bg-custom' }}
+  ">
+
+    {% if data.fields.title.value or data.fields.content.value %}
+      <div class="section-content
+      {{ 'text-white' if 
+              (data.options.contentBackground.value == 'bg-primary')
+              or (data.options.contentBackground.value == 'bg-secondary') 
+              or data.options.isWhite.value }}
+      {{ data.options.customContentBackground.value }}">
+      
+      {% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if 
+              (data.options.contentBackground.value == 'bg-primary') 
+              or (data.options.contentBackground.value == 'bg-secondary') 
+              or data.options.isWhite.value }}">{{ data.fields.title.value | safe }}</h2>
+      {% endif %}
+
+      {{ data.fields.content.value | safe }}
+
+      {% if data.fields.buttons.value %}
+       <div class="section-buttons-wrapper">
+        {% for btn in data.fields.buttons.value %}
+            {{ button(btn) }}
+        {% endfor %}
+       </div>
+      {% endif %}
+
+  </div>
+  {% endif %}
+
+    </section>

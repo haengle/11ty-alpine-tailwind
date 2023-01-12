@@ -1,0 +1,224 @@
+{% set filterId1 = 'filter1-' | uniqueAlphaKey %}
+{% set filterId2 = 'filter2-' | uniqueAlphaKey %}
+{% set defaultText = 'Select Program' %}
+
+<div class="
+    program-compare-wrapper
+    {{ 'program-compare-outer section' if not isInner }}
+    {{ data.options.customClass.value }}"
+    x-data="{
+        program1: '',
+        program2: '',
+        error: '',
+        selectedContent1: '',
+        selectedContent2: '',
+        showPrograms: false,
+        numRows: 0,
+
+        comparePrograms() {
+            if (this.program1 === this.program2 || this.program1 == '' || this.program2 == '') {
+                this.error = 'Please select different programs'
+                this.showPrograms = false;
+            } else {
+                this.error = '';
+                this.showPrograms = true;
+            }
+        },
+
+        setHeights() {
+            let biggestHeight = 0;
+            for (let i = 0; i <= this.numRows; i++) {
+                biggestHeight = 0;
+                let elements = document.querySelectorAll(`.value${i}`);
+                elements.forEach(function(element, index){
+                    biggestHeight = element.offsetHeight > biggestHeight ? element.offsetHeight : biggestHeight;
+                });
+
+                [...elements].forEach(el => {
+                    el.style.height = biggestHeight + 'px';
+                })
+            }
+        },
+
+        clearHeights() {
+            for (let i = 0; i <= this.numRows; i++) {
+                biggestHeight = 0;
+                let elements = document.querySelectorAll(`.value${i}`);
+                [...elements].forEach(el => {
+                    el.style.height = '';
+                })
+            }
+        }
+    }">
+
+    <div class="program-compare-header">
+        {% if data.options.hideTitle.value == false %}
+        <h2 class="
+            {{ 'text-center' if data.options.centerTitle.value }}
+            {{ 'text-white' if data.options.isWhite.value }}">
+            {{ data.fields.title.value | safe }}
+        </h2>
+        {% endif %}
+
+        <div class="program-compare-selects-wrapper flex gap-4 items-center justify-center">
+    
+            {# first dropdown #}
+            <div class="toggle-dropdown-wrapper"
+                x-data="{ 
+                    defaultText: '{{ defaultText }}',
+                    
+                    dropdownSelect(index) {
+                        this.isVisible = false;
+                        this.defaultText = this.$event.target.innerText;
+                        this.selectedContent1 = 'content-'+index;
+                        this.program1 = this.$event.target.innerText;
+                        this.showPrograms = false;
+                        this.clearHeights();
+                    }
+                }"
+                >
+
+                <div x-data="dropdown">
+                    <div class="toggle-dropdown-label hidden" 
+                    id="{{ filterId1 }}" x-text="defaultText"></div>
+
+                    <div class="toggle-dropdown-select">
+                        <button 
+                            class="toggle-dropdown-listbox-button" 
+                            aria-haspopup="listbox" 
+                            aria-labelledby="{{ filterId1 }}" 
+                            x-bind="button">
+                        
+                        <span class="toggle-dropdown-default-value" x-text="defaultText"></span>
+                        <i class="far fa-chevron-down"></i>
+                        </button>
+
+                    <ul class="toggle-dropdown-listbox" 
+                        role="listbox" 
+                        id="{{ filterId }}-list" 
+                        tabindex="-1" 
+                        x-bind="content">
+                    
+                    {% for item in data.fields.programs.value %}
+                        <li class="toggle-dropdown-option" 
+                            id="{{ filterId1 }}-option{{ loop.index }}" 
+                            role="option">
+                            <button 
+                                class="toggle-dropdown-option_btn" 
+                                @click="dropdownSelect( {{ loop.index }} )"
+                                >
+                            {{ item.fields.programTitle.value }}
+                            </button>
+                        </li>       
+                    {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+            </div>
+            {# end first dropdown #}
+
+            {# second dropdown #}
+            <div class="toggle-dropdown-wrapper"
+                x-data="{ 
+                    defaultText: '{{ defaultText }}',
+                    
+                    dropdownSelect(index) {
+                        this.isVisible = false;
+                        this.showPrograms = false;
+                        this.defaultText = this.$event.target.innerText;
+                        this.selectedContent2 = 'content-'+index;
+                        this.program2 = this.$event.target.innerText;
+                        this.clearHeights();
+                    }
+                }"
+                >
+
+
+                <div x-data="dropdown">
+                    <div class="toggle-dropdown-label hidden" 
+                    id="{{ filterId2 }}" x-text="defaultText"></div>
+
+                    <div class="toggle-dropdown-select">
+                        <button 
+                            class="toggle-dropdown-listbox-button" 
+                            aria-haspopup="listbox" 
+                            aria-labelledby="{{ filterId2 }}" 
+                            x-bind="button">
+                        
+                        <div class="toggle-dropdown-default-value" x-text="defaultText"></div>
+                        <i class="far fa-chevron-down"></i>
+                    </button>
+
+                    <ul class="toggle-dropdown-listbox" 
+                        role="listbox" 
+                        id="{{ filterId2 }}-list" 
+                        tabindex="-1" 
+                        x-bind="content">
+                    
+                    {% for item in data.fields.programs.value %}
+                        <li class="toggle-dropdown-option" 
+                            id="{{ filterId2 }}-option{{ loop.index }}" 
+                            role="option">
+                            <button 
+                                class="toggle-dropdown-option_btn" 
+                                @click="dropdownSelect( {{ loop.index }} )"
+                                >
+                            {{ item.fields.programTitle.value }}
+                            </button>
+                        </li>       
+                    {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+            </div>
+            {# end second drodpwon #}
+
+            <button @click="comparePrograms; $nextTick(() => {
+                    requestAnimationFrame(() => {
+                        setHeights(); 
+                    });
+                })" class="btn btn--primary">Compare</button>
+
+    </div>
+
+    <span class="error" x-text="error"></span>
+
+</div>
+
+    <div class="comparison-content-wrapper">
+
+        <div class="comparison-chart-wrapper" x-show="showPrograms">
+
+            {% for item in data.fields.programs.value %}
+                {% if loop.first %}
+                <div class="hidden md:block comparison-chart-keys order-first" 
+                    x-init="numRows = '{{ item.fields.details.value | length }}'"
+                    aria-hidden="true">
+                    <div class="key value0">&nbsp;</div>
+                {% for key in item.fields.details.value %}
+                    <div class="key font-bold value{{loop.index}}">{{ key.fields.detailKey.value }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+            <div class="chart-content content-{{loop.index}} order-2"
+                :class="{ '!order-1': selectedContent1 === 'content-{{ loop.index }}' }" 
+                x-show="selectedContent1 === 'content-{{ loop.index }}' || selectedContent2 === 'content-{{ loop.index }}'">
+                <div class="key-heading value0">{{ item.fields.programTitle.value }}</div>
+            {% for val in item.fields.details.value %}
+                <div class="value value{{loop.index}}">
+                    <h4 class="block md:hidden" aria-label="{{ item.fields.programTitle.value }} {{ val.fields.detailKey.value }}">{{ val.fields.detailKey.value }}</h4>
+                    {{ val.fields.detailValue.value }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+
+
+
+</div>
+

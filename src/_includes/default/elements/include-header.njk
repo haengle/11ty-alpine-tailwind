@@ -1,0 +1,10 @@
+{% set headerContext = entry.fields.content.fields.headerTemp.value %}
+
+    {% if headerContext == 'default' %}
+      {% include 'default/components/navbar.njk' %}
+    {% elif headerContext == 'custom' %}
+      {% include 'theme/components/navbar.njk' ignore missing %}
+    {% elif headerContext == 'none' %}
+      {# no header #}
+    {% endif %}
+

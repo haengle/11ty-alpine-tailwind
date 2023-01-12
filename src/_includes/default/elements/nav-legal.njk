@@ -1,0 +1,13 @@
+<nav class="nav-legal" aria-label="legal">
+<ul>
+{%- for link in theme.siteFooter.legalNav %}
+    <li class="nav-legal_nav_item">
+        <a class="nav-legal_nav_link" 
+        href="{{ link.href | url }}" 
+        target="{{ link.target }}">
+            {{ link.text | safe }}
+        </a>
+    </li>
+{%- endfor %}
+</ul>
+</nav>

@@ -1,0 +1,50 @@
+{
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    "@semantic-release/npm",
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "labels": [
+          "release-failed"
+        ],
+        "assignees": [
+          "madikarizma"
+        ],
+        "releasedLabels": [
+          "released"
+        ],
+        "addReleases": true
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogTitle": "# Changelog"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "package.json"
+        ],
+        "message": "chore(release): Release ${nextRelease.version}\n\n${nextRelease.notes}"
+      }
+    ]
+  ]
+}

@@ -1,0 +1,4 @@
+{% from '../elements/button.njk' import button with context %}
+<div class="button-wrapper {{ data.options.customClass.value }}">
+    {{ button(data) }}
+</div>

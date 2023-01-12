@@ -1,0 +1,142 @@
+{% set cleanPostSlug = entry.fields.settings.fields.urlPath.value.slice(0,-1) %}
+{% set postSlug = cleanPostSlug.split('/') | last %}
+{% set blogUrl = entry.fields.settings.fields.urlPath.value.split(postSlug) %}
+{% set blogName = blogUrl[0] | replace('-', ' ') | replace('/','') | capitalize %}
+<div class="container">
+    <div class="row">
+
+<section class="blog-wrapper blog-display--detail blog--default">
+
+    {% set postData = entry.fields.content.fields.main %}
+    {% set postSidebar = entry.fields.content.fields.sidebar %}
+    {% set postRelated = entry.fields.content.fields.otherPosts %}
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": "{{ postData.fields.postTitle.value }}",
+      "image": [
+        "{{ postData.fields.postImage.value | getAssetUrl }}?w=600&ar=4:2.5&fit=crop"
+       ],
+      "datePublished": "{{ postData.fields.publishDate.value.datetime }}",
+      "dateModified": "{{ postData.fields.publishDate.value.datetime }}",
+      "author": [{
+          "@type": "Organization",
+          "name": "{{ theme.site.siteName }}"
+        }]
+    }
+    </script>
+
+    <article class="blog-article blog-article--{{ theme.site.postDetailVariant }}">
+            <div class="blog-article-heading">
+                <div class="blog-breadcrumbs"><a href="/">Home</a> / <a href="{{ blogUrl[0] }}">{{ blogName }}</a> / <span>{{ postData.fields.postTitle.value }}</span></div>
+                <h1 class="blog-h1">{{ postData.fields.postTitle.value }}</h1>
+                <aside class="blog-article-meta">
+                        {% if postData.fields.categories.value !== "" %}
+                        {% set cats = postData.fields.categories.value.split(",") %}
+                        <div class="blog-article-category {{ 'long' if (cats | length > 1) }}">
+                            {% for c in cats %}
+                            <span><a href="{{ blogUrl[0] }}category/{{ c | slugify }}">{{ c }}</a></span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    <div class="blog-article-date">
+                       {{ postData.fields.publishDate.value.datetime | prettyDate }}
+                    </div>
+                    {% if postData.fields.author.value %}
+                     <div class="blog-article-author">
+                        By: {{ postData.fields.author.value }}
+                    </div>
+                    {% endif %}
+                    {% if theme.site.displayPostShare %}
+                    <div class="blog-article-share">
+                        {% include 'default/elements/share-social.njk' ignore missing %}
+                    </div>
+                    {% endif %}
+                </aside>
+            </div>
+
+            <figure class="blog-article-image blog-article-image--{{ theme.site.postImageVariant }}">
+                <img 
+                    srcset="{{ postData.fields.postImage.value | getAssetUrl }}?w=1200&ar=4:2.5&fit=crop&auto=format 1200w,
+                            {{ postData.fields.postImage.value | getAssetUrl }}?w=600&ar=4:2.5&fit=crop&auto=format 600w"
+                    src="{{ postData.fields.postImage.value | getAssetUrl }}?w=600&ar=4:2.5&fit=crop&auto=format"
+                    alt="{{ postData.fields.postImage.value.description|default(" ") }}">
+            </figure>
+            
+            {% if postSidebar.fields.components.value | length %}
+            <div class="row mt-8 md:flex md:flex-nowrap md:justify-center">
+                <section class="blog-article-main section !mx-0 !pt-0">
+                {{ postData.fields.content.value | safe }}
+                </section>
+                <aside class="blog-article-sidebar">
+                    {% set otherComponents = postSidebar.fields.components.value %}
+
+                    {% for key, value in otherComponents %}
+                        {% set isInner = true %}
+                        {% set data = value %}
+                        {% include '' + value.model.directory + '/' + value.model.type + '/' + value.model.name | lower + '.njk' ignore missing %}
+                    {% endfor %}
+                </aside>
+            </div>
+            {% else %}
+            <section class="section">
+                {{ postData.fields.content.value | safe }}
+            </section>
+            {% endif %}
+        </article>
+
+{% if (postRelated.fields.relatedPosts.value) or (postRelated.fields.postLabels.value) or (postRelated.fields.mostRecent.value) %}
+{% set postFilters = [] %}
+
+   <div class="row">
+        <div class="blog-wrapper blog-display--list related-posts-wrapper blog--default">
+
+        {% if postRelated.fields.title.value %}
+        <h2 class="related-posts-title">{{ postRelated.fields.title.value }}</h2>
+        {% endif %}
+
+        {% for related in postRelated.fields.relatedPosts.value %}
+            {% set postData = related %}
+            {% include 'default/elements/blog-related.njk' ignore missing %}
+        {% endfor %}
+
+        {% if postRelated.fields.postLabels.value %}
+            {% for label in postRelated.fields.postLabels.value.split(',') %}
+                {% set postFilters = (postFilters.push(label | trim | lower), postFilters) %}
+            {% endfor %}
+
+            {% set postList = collections.posts | filterResults('post-labels', postFilters) %}
+
+            {% for post in postList %}
+
+                {% set postSettings = post.fields.settings.fields %}
+                {% set postData = post.fields.content.fields.main %}
+                {% include 'default/elements/blog-list.njk' ignore missing %}
+    
+            {% endfor %}
+        {% endif %}
+        {% if postRelated.fields.mostRecent.value %}
+            {# get category #}
+            {% if postData.fields.categories.value !== "" %}
+                {% set cats = postData.fields.categories.value.split(",") %}
+                {% set displayPosts = collections.posts | filterResults('url', blogUrl[0]) | filterResults('exclude', entry.label | lower) | limit(3) %}
+            {% else %}
+                {% set displayPosts = collections.posts | filterResults('exclude', entry.label | lower) | limit(3) %}
+            {% endif %}
+
+            {% for post in displayPosts %}
+
+                {% set postSettings = post.fields.settings.fields %}
+                {% set postData = post.fields.content.fields.main %}
+                {% include 'default/elements/blog-list.njk' ignore missing %}
+    
+            {% endfor %}
+        {% endif %}
+
+    </div>
+
+    </div>
+{% endif %}
+</section>

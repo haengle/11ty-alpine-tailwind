@@ -1,0 +1,15 @@
+<section class="section-form-wrapper
+{{ 'two-cols' if data.options.columns.value == 'two' }} 
+{{ data.options.customClass.value }}">
+{% if data.fields.selectForm.value == 'rfi' %}
+    {% if data.fields.formSource.value %} 
+        {% set formDataSrc = theme[data.fields.formSource.value] %}
+    {% endif %} 
+    {% if data.fields.formTitle.value !== '' %} 
+        {% set formTitle = data.fields.formTitle.value %}
+    {% endif %} 
+    {% include 'default/elements/form-rfi.njk' ignore missing %}
+{% else %} 
+    {% include 'theme/elements/form-custom.njk' ignore missing %}
+{% endif %}
+</section>

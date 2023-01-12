@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{ entry.fields.metadata.fields.title.value }}</title>
+  <meta name="description" content="{{ entry.fields.metadata.fields.description.value }}">
+  <link rel="stylesheet" href="/css/styles.css?ref={{ build.id }}">
+  <script src="/js/bundle.js?ref={{ build.id }}" defer></script>
+  <link rel="icon" href="/static/favicon.ico">
+  {% if entry.fields.metadata.fields.hideSearch.value %}
+    <meta name="robots" content="noindex,nofollow">
+  {% endif %}
+  {% include 'default/elements/site-meta.njk' ignore missing %}
+  {% include 'theme/elements/custom-meta.njk' ignore missing %}
+</head>
+<body x-data="global" class="{{ 'home' if page.url == '/' }} {{ page.url | slug }}"> 
+
+ {% from '../../macros/modal.njk' import modal with context %}
+ 
+  {% block baseContent %}
+  {% endblock %}
+
+
+  {{ modal(placeholderForm, theme.rfi.title, modalId = "reqInfo") }}
+  
+
+  <script src="/js/custom/browserWarn.js"></script>
+
+</body> 
+</html>
+  

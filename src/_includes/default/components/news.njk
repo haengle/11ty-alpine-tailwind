@@ -1,0 +1,232 @@
+{% set cardTheme = data.options.cardTheme.value %}
+
+<section class="
+    {{ 'cards-outer section' if not isInner }}
+     max-w-none
+    {{ data.options.customClass.value }}"
+    x-data="loadNews()"
+    x-ref="newsTop">
+ 
+    {% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+    
+    <section class="card-group-wrapper 
+            {{ 'cols-1' if data.options.groupLayout.value == 'one' }} 
+            {{ 'cols-2' if data.options.groupLayout.value == 'two' }} 
+            {{ 'cols-3' if (data.options.groupLayout.value == 'three') or (data.options.groupLayout.value == "") }} 
+            {{ 'cols-4' if data.options.groupLayout.value == 'four' }} 
+    {{ data.options.customClass.value }}">
+
+
+    <template x-for="item in filteredNews" :key="item.id">
+    
+        <div class="card 
+            {{ 'card--default' if (cardTheme == 'default') or
+                                (data.options.cardLayout.value == 'default') or
+                                (data.options.cardLayout.value == "") or
+                                (cardTheme == "") }} 
+            {{ 'card--horizontal' if data.options.cardLayout.value == 'horizontal' }} 
+            {{ 'card--outline' if cardTheme == 'outline' }} 
+            {{ 'card--fill' if cardTheme == 'fill' }} 
+            {{ 'card--brand' if cardTheme == 'brand' }} 
+            {{ 'card--custom' if cardTheme == 'custom' }}">
+        <div class="card-wrapper">
+        
+            <template x-if="item.image">
+                <div class="card-image card-image--default">
+                <img 
+                :srcset="`${item.image}?w=640&ar=4:2.5&fit=crop&auto=format 640w,
+                        ${item.image}?w=320&ar=4:2.5&fit=crop&auto=format 320w`"
+                :src="`${item.image}?w=640&ar=4:2.5&fit=crop&auto=format`"
+                alt="">
+                </div>
+            </template>
+                
+            <div class="card-content 
+                    {{ '!text-default' if cardTheme != 'brand' }} 
+                    {{ '!text-white' if cardTheme == 'brand' }}">
+
+                <div class="card-catdate-wrapper">
+
+                    <div class="card-cat">
+                        <span class="{{ '!text-white' if cardTheme == 'brand' }}"
+                        x-text="item.category">
+                        </span>
+                    </div>
+                    
+                    <div class="card-date">
+                        <span x-text="item.displayDate"></span>
+                    </div>
+                </div>
+
+                <h3 class="{{ '!text-white' if cardTheme == 'brand' }}" id="{{ 'news' | uniqueAlphaKey }}">
+                    {% if data.options.showButton.value == false %}
+                        <a :href="item.link" class="stretched-link no-underline text-current" target="_blank" x-text="item.title"></a></h3>
+                    {% else %}
+                        <span x-text="item.title"></span>
+                    {% endif %}
+                </h3>
+
+                <p x-html="item.summary"></p>
+
+                {% if data.options.showButton.value %}
+                    <div class="card-buttons-wrapper">
+                        <a :href="item.link" target="_blank" :aria-label="`Read more about ${item.title}`" class="btn btn--primary">
+                        Read More
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    </template>
+    </section>
+
+    <div x-show="pageCount() > 1">
+        <nav aria-label="News pagination" class="nav-pagination">
+            <ul>
+                <li class="nav-pagination_item">
+                 <button
+                    @click="prevPage, $nextTick(() => $scroll($refs.newsTop, {offset: $refs.navbar.offsetHeight}))"
+                    :disabled="pageNumber==0"
+                    class="nav-pagination_link arrow"
+                    :class="{ 'inactive' : pageNumber==0 }"
+                    >
+                    &lsaquo;
+                   </button>
+                </li>
+                <template x-for="(page,index) in pages()" :key="index">
+                    <li class="nav-pagination_item">
+                    <button
+                        class="nav-pagination_link"
+                        :class="{ 'active' : index === pageNumber }"
+                        type="button"
+                        @click="viewPage(index), $nextTick(() => $scroll($refs.newsTop, {offset: $refs.navbar.offsetHeight}))"
+                    >
+                        <span x-text="index+1"></span>
+                    </button>
+                    </li>
+                </template>
+                <li class="nav-pagination_item">
+                 <button
+                    @click="nextPage, $nextTick(() => $scroll($refs.newsTop, {offset: $refs.navbar.offsetHeight}))"
+                    :disabled="pageNumber >= pageCount() -1"
+                    class="nav-pagination_link arrow"
+                    :class="{ 'inactive' : pageNumber >= pageCount() -1 }"
+                    >
+                    &rsaquo;
+                   </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+{% set newsArray %}
+    [
+        {% for item in data.fields.items.value %}
+        {
+            id: "{{ loop.index }}",
+            title: "{{ item.fields.newsTitle.value }}",
+            link: "{{ item.fields.newsLink.value }}",
+            date: "{{ item.fields.newsDate.value.datetime }}",
+            displayDate: "{{ item.fields.newsDate.value.datetime | prettyDate }}",
+            summary: "{{ item.fields.summary.value }}",
+            image: "{{ item.fields.image.value | getAssetUrl }}",
+            category: "{{ item.options.category.value }}"
+        }{% if loop.index0 < loop.length - 1 %},{% endif %}
+        {% endfor %}
+    ]
+{% endset %}
+
+    <script>
+        var newsData = {{ newsArray | safe }}
+        newsData.sort(function(a,b) {
+            var dateA = new Date(a.date);
+            var dateB = new Date(b.date);
+            if (dateA && dateB) {
+            return dateB - dateA;
+            }
+        });
+
+        function loadNews() {
+        return {
+          search: "",
+          pageNumber: 0,
+          size: 6,
+          total: "",
+          allData: newsData,
+
+          get filteredNews() {
+            const start = this.pageNumber * this.size,
+              end = start + this.size;
+
+            if (this.search === "") {
+              this.total = this.allData.length;
+              return this.allData.slice(start, end);
+            }
+
+            //Return the total results of the filters
+            this.total = this.allData.filter((item) => {
+              return item.title
+                .toLowerCase()
+                .includes(this.search.toLowerCase());
+            }).length;
+
+            //Return the filtered data
+            return this.allData
+              .filter((item) => {
+                return item.title
+                  .toLowerCase()
+                  .includes(this.search.toLowerCase());
+              })
+              .slice(start, end);
+          },
+
+          //Create array of all pages (for loop to display page numbers)
+          pages() {
+            return Array.from({
+              length: Math.ceil(this.total / this.size),
+            });
+          },
+
+          //Next Page
+          nextPage() {
+            this.pageNumber++;
+          },
+
+          //Previous Page
+          prevPage() {
+            this.pageNumber--;
+          },
+
+          //Total number of pages
+          pageCount() {
+            return Math.ceil(this.total / this.size);
+          },
+
+          //Return the start range of the paginated results
+          startResults() {
+            return this.pageNumber * this.size + 1;
+          },
+
+          //Return the end range of the paginated results
+          endResults() {
+            let resultsOnPage = (this.pageNumber + 1) * this.size;
+
+            if (resultsOnPage <= this.total) {
+              return resultsOnPage;
+            }
+
+            return this.total;
+          },
+
+          //Link to navigate to page
+          viewPage(index) {
+            this.pageNumber = index;
+          },
+        };
+      }
+    </script>

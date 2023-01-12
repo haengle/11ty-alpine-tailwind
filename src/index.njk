@@ -1,0 +1,18 @@
+---js
+{
+  pagination: {
+    data: "entries",
+    size: 1,
+    alias: "entry",
+    before: (data = []) => {
+      return data.filter((entry) => {
+        return entry.subtype === 'pages'
+          && entry?.fields?.settings?.fields?.urlPath?.value
+          && entry.fields.settings.fields.urlPath.value !== '/404/';
+      });
+    }
+  },
+  permalink: "{{ entry.fields.settings.fields.urlPath.value }}/index.html"
+}
+---
+{% include 'body.njk' %}

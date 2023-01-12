@@ -1,0 +1,247 @@
+{% set allPosts = collections.posts %}
+{% set listPageUrl = entry.fields.settings.fields.urlPath.value %}
+{% set filteredPosts = allPosts | filterResults('url', listPageUrl) %}
+
+{% if data.options.postsPerPage.value == '' %}
+  {% set postsPerPage = 8 %}
+{% else %}
+  {% set postsPerPage = data.options.postsPerPage.value | int %}
+{% endif %}
+
+{% if 'category' in page.url %}
+  {% set theCategory = page.url.split('/category') %}
+  {% set filteredPosts = allPosts | filterResults('url', theCategory[0]) | filterResults('category-post', theCategory | last | replace('/', '') | replace('-', ' ')) %}
+{% endif %}
+
+<section class="blog-wrapper {{ data.options.customClass.value }}"
+x-data="loadPagination()"
+x-ref="pageTop">
+
+    {% if (data.options.hideTitle.value == false) or (data.fields.intro.value) %}
+    <div class="blog-header">
+        <h1 class="{{ 'text-center' if data.options.centerTitle.value }}">{{ data.fields.title.value }}</h1>
+
+          <p class="blog-intro max-w-screen-sm">
+              {{ data.fields.intro.value | safe }}
+            </p>
+    </div>
+    {% endif %}
+
+    {% if data.options.displayFilter.value == true %}
+    <div class="blog-filter-wrapper">
+        {% include 'default/elements/blog-filter.njk' ignore missing %}
+    </div>
+    {% endif %}
+
+    {% if collections.featuredPosts | filterResults('url', page.url) | length > 0 %}
+        <div class="featured-posts-wrapper">
+            {% for post in collections.featuredPosts %}
+              {% set postSettings = post.fields.settings.fields %}
+              {% set postData = post.fields.content.fields.main %}
+                {% include 'default/elements/blog-list.njk' ignore missing %}
+          {% endfor %}
+        </div>
+        {% endif %}
+
+{# paginated array for alpine pagination/filtering #}
+{% set paginatedArray %}
+[
+  {% for p in filteredPosts %}
+    {% set postData = p.fields.content.fields.main.fields %}
+    {id:"{{ loop.index }}",title:"{{ postData.postTitle.value }}",externalLink:"{{p.fields.settings.fields.externalLink.value}}",url:"{{p.fields.settings.fields.urlPath.value}}",image:"{{ postData.postImage.value | getAssetUrl }}",imageAlt:"{{ postData.postImage.value.description|default('') }}",publishDate:"{{postData.publishDate.value.datetime | prettyDate}}",summary:"{{postData.summary.value}}",categories:"{{postData.categories.value}}"}{% if not loop.last %},{% endif %}
+  {% endfor %}  
+]
+{% endset %}
+
+<div class="blog-wrapper blog-display--list 
+    {{ 'blog--default' if data.options.blogListLayout.value == 'default' }}
+    {{ 'blog--large' if data.options.blogListLayout.value == 'large' }}
+    {{ 'blog--horizontal' if data.options.blogListLayout.value == 'horizontal' }}">
+
+
+    {# {% for post in filteredPosts %}
+
+            {% set postSettings = post.fields.settings.fields %}
+            {% set postData = post.fields.content.fields.main %}
+            {% set displayShare = data.options.displayShare.value %}
+
+            {% include 'default/elements/blog-list.njk' ignore missing %}
+   
+    {% endfor %} #}
+
+    <template x-for="item in filteredNews" :key="item.id">
+        <article class="blog-list-item 
+        {{ 'blog-list-item--default' if data.options.blogListLayout.value == 'default' }}
+        {{ 'blog-list-item--large' if data.options.blogListLayout.value == 'large' }}
+        {{ 'blog-list-item--horizontal' if data.options.blogListLayout.value == 'horizontal' }}">
+
+        <div class="blog-list-item-wrapper">
+          <template x-if="item.image">
+              <div class="blog-list-item-image">
+                <a :href="item.externalLink.includes('http') ? item.externalLink : item.url" :target="item.externalLink.includes('http') ? '_blank' : ''"> 
+                  <img 
+                    :srcset="`${item.image}?w=640&ar=4:2.5&fit=crop&auto=format 640w,
+                    ${item.image}?w=320&ar=4:2.5&fit=crop&auto=format 320w`"
+                :src="`${item.image}?w=640&ar=4:2.5&fit=crop&auto=format`"
+                :alt="item.imageAlt">
+                </a>
+              </div>
+          </template>
+
+          <div class="blog-list-item-content">
+            <div class="blog-list-item-date" x-text="item.publishDate"></div>
+            <h3><a :href="item.externalLink.includes('http') ? item.externalLink : item.url" :target="item.externalLink.includes('http') ? '_blank' : ''" x-html="item.title"></a></h3>
+            <template x-if="item.summary">
+               <p x-html="item.summary"></p>
+            </template>
+              <div class="blog-list-item-meta">
+                  <template x-if="item.categories">
+                  <div class="blog-list-item-category">
+                      <span x-text="item.categories"></span>
+                  </div>
+                  </template>
+              </div>
+          </div>
+        </div>
+    </article>
+</template>
+    
+</div>
+
+<div class="row" x-show="pageCount() > 1">
+        <nav aria-label="{{ label }} pagination" class="nav-pagination">
+            <ul>
+                <li class="nav-pagination_item">
+                 <button
+                    @click="prevPage, $nextTick(() => $scroll($refs.pageTop, {offset: $refs.navbar.offsetHeight}))"
+                    :disabled="pageNumber==0"
+                    class="nav-pagination_link arrow"
+                    :class="{ 'inactive' : pageNumber==0 }"
+                    >
+                    &lsaquo;
+                   </button>
+                </li>
+                <template x-for="(page,index) in pages()" :key="index">
+                    <li class="nav-pagination_item">
+                    <button
+                        :data-hash="index + 1"
+                        class="nav-pagination_link"
+                        :class="{ 'active' : index === pageNumber }"
+                        type="button"
+                        x-init="$nextTick(() => { 
+                            let tabTarget = window.location.hash.substring(1);
+                            let dataHash = $el.dataset.hash;
+                            if (tabTarget && dataHash && dataHash === tabTarget) {
+                                $el.click();
+                            }
+                        })"
+                        @click="viewPage(index), $nextTick(() => $scroll($refs.pageTop, {offset: $refs.navbar.offsetHeight}))"
+                    >
+                        <span x-text="index+1"></span>
+                    </button>
+                    </li>
+                </template>
+                <li class="nav-pagination_item">
+                 <button
+                    @click="nextPage, $nextTick(() => $scroll($refs.pageTop, {offset: $refs.navbar.offsetHeight}))"
+                    :disabled="pageNumber >= pageCount() -1"
+                    class="nav-pagination_link arrow"
+                    :class="{ 'inactive' : pageNumber >= pageCount() -1 }"
+                    >
+                    &rsaquo;
+                   </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+<script>
+        const dataToPaginate = {{ paginatedArray | safe }}
+
+        function loadPagination() {
+
+        return {
+          search: "",
+          pageNumber: 0,
+          size: {{ postsPerPage }},
+          total: "",
+          allData: dataToPaginate,
+
+          get filteredNews() {
+            const start = this.pageNumber * this.size,
+              end = start + this.size;
+
+            if (this.search === "") {
+              this.total = this.allData.length;
+              return this.allData.slice(start, end);
+            }
+
+            //Return the total results of the filters
+            this.total = this.allData.filter((item) => {
+              return item.title
+                .toLowerCase()
+                .includes(this.search.toLowerCase());
+            }).length;
+
+            //Return the filtered data
+            return this.allData
+              .filter((item) => {
+                return item.title
+                  .toLowerCase()
+                  .includes(this.search.toLowerCase());
+              })
+              .slice(start, end);
+          },
+
+          //Create array of all pages (for loop to display page numbers)
+          pages() {
+            return Array.from({
+              length: Math.ceil(this.total / this.size),
+            });
+          },
+
+          //Next Page
+          nextPage() {
+            this.pageNumber++;
+            window.location.hash = this.pageNumber + 1;
+          },
+
+          //Previous Page
+          prevPage() {
+            this.pageNumber--;
+            window.location.hash = this.pageNumber + 1;
+          },
+
+          //Total number of pages
+          pageCount() {
+            return Math.ceil(this.total / this.size);
+          },
+
+          //Return the start range of the paginated results
+          startResults() {
+            return this.pageNumber * this.size + 1;
+          },
+
+          //Return the end range of the paginated results
+          endResults() {
+            let resultsOnPage = (this.pageNumber + 1) * this.size;
+
+            if (resultsOnPage <= this.total) {
+              return resultsOnPage;
+            }
+
+            return this.total;
+          },
+
+          //Link to navigate to page
+          viewPage(index) {
+            this.pageNumber = index;
+            window.location.hash = index + 1;
+          },
+        };
+      }
+    </script>
+ 
+</section>
+
+ 

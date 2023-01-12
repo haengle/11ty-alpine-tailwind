@@ -1,0 +1,38 @@
+<section class="profile-wrapper 
+{{ 'section max-w-none' if not isInner }}
+{{ data.options.customClass.value }}">
+
+    {% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">
+      {{ data.fields.title.value | safe }}
+      </h2>
+    {% endif %}
+
+   <div class="profile-item md:cols-2 lg:cols-3 !items-start">
+        <div class="profile-item-summary {{ 'text-white' if data.options.isWhite.value }}">
+            <h3>{{ data.fields.name.value }}</h3>
+
+            {{ data.fields.summary.value | safe }}
+        </div>
+        <div class="profile-item-image">            
+                <img 
+                    {% if data.options.imageRatio.value == 'default' %}
+                        src="{{ data.fields.image.value | getAssetUrl }}?w=600&ar=1:1&fit=crop&auto=format"
+                    {% elif data.options.imageRatio.value == 'portrait' %}
+                        srcset="{{ data.fields.image.value | getAssetUrl }}?w=640&ar=7:8&fit=crop&auto=format 640w,
+                        {{ data.fields.image.value | getAssetUrl }}?w=320&ar=7:8&fit=crop&auto=format 320w"
+                        src="{{ data.fields.image.value | getAssetUrl }}?w=640&ar=7:8&fit=crop&auto=format"
+                    {% else %}
+                        srcset="{{ data.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format 640w,
+                        {{ data.fields.image.value | getAssetUrl }}?w=320&ar=4:2.5&fit=crop&auto=format 320w"
+                        src="{{ data.fields.image.value | getAssetUrl }}?w=320&ar=4:2.5&fit=crop&auto=format 320w"
+                    {% endif %}
+                    alt="{{ data.fields.image.value.description|default(" ") }}">
+        </div>
+        <div class="profile-item-details {{ 'text-white' if data.options.isWhite.value }}">
+            {{ data.fields.details.value | safe }}
+            
+        </div>
+    </div>
+</section>

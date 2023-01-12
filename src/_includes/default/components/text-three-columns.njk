@@ -1,0 +1,111 @@
+{% from 'default/elements/button.njk' import button with context %}
+  
+  <section class="section section--threecols
+  {{ 'section--default' if data.options.imagePosition.value === 'default' }}
+  {{ 'section--image-bottom' if data.options.imagePosition.value === 'image-bottom' }}
+  {{ 'section--image-fw' if data.options.imagePosition.value === 'image-fw' }}
+
+  {{ 'bg-default' if data.options.sectionBackground.value === 'bg-default' }}
+  {{ 'bg-primary' if data.options.sectionBackground.value === 'bg-primary' }}
+  {{ 'bg-secondary' if data.options.sectionBackground.value === 'bg-secondary' }}
+  {{ 'bg-custom' if data.options.sectionBackground.value === 'bg-custom' }}
+
+  {{ data.options.customSectionBackground.value }}
+  {{ data.options.customClass.value }}">
+
+  {% if data.options.isFullWidth.value == true %}
+  <div class="fw-wrapper 
+  {{ data.options.sectionBackground.value }}
+  {{ data.options.customSectionBackground.value }} z-neg1"></div>
+  {% endif %}
+  
+  {% if data.fields.image.value %}
+    <div class="section-image 
+        {{ 'section-image--default' if data.options.imagePosition.value === 'default' }}
+        {{ 'section-image--bottom' if data.options.imagePosition.value === 'image-bottom' }}
+        {{ 'section-image--fw' if data.options.imagePosition.value === 'image-fw' }}
+        {% if 'fw' in data.options.imagePosition.value %} 
+                fw-wrapper overlay overlay-black_75 
+        {% endif %}
+        ">
+        
+         <img 
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=1200&max-h=600&fit=crop&auto=format 1200w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=640&max-h=320&fit=crop&auto=format 640w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=640&max-h=320&fit=crop&auto=format"
+            alt="{{ data.fields.image.value.description|default(" ") }}"
+            class="img--fit">
+    </div>
+  {% endif %}
+   {% if data.options.hideTitle.value == false %}
+        <h2 class="{{ 'text-white' if 
+              (data.options.sectionBackground.value == 'bg-primary') 
+              or (data.options.imagePosition.value == 'image-fw')
+              or data.options.isWhite.value }}
+              relative
+                  {{ 'text-center' if data.options.centerTitle.value }}">
+
+                  {{ data.fields.title.value | safe }}
+        </h2>
+    {% endif %}
+
+  {% if data.fields.intro.value %}
+    <div class="{{ 'text-white' if 
+              (data.options.sectionBackground.value == 'bg-primary') 
+              or (data.options.imagePosition.value == 'image-fw')
+              or data.options.isWhite.value }}
+              relative">
+    {{ data.fields.intro.value | safe }}
+    </div>
+  {% endif %}
+
+  <div class="section-content-wrapper">
+   
+    <div class="section-content col1 
+    {{ 'text-white' if 
+              (data.options.sectionBackground.value == 'bg-primary') 
+              or (data.options.imagePosition.value == 'image-fw')
+              or data.options.isWhite.value }}">
+        
+        {{ data.fields.column1.value | safe }}
+
+        {% if data.fields.button1.value %}
+          {% for btn1 in data.fields.button1.value %}
+          {{ button(btn1) }}
+          {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="section-content col2 
+    {{ 'text-white' if 
+              (data.options.sectionBackground.value == 'bg-primary') 
+              or (data.options.imagePosition.value == 'image-fw')
+              or data.options.isWhite.value }}">
+        
+        {{ data.fields.column2.value | safe }}
+
+        {% if data.fields.button2.value %}
+          {% for btn2 in data.fields.button2.value %}
+          {{ button(btn2) }}
+          {% endfor %}
+        {% endif %}
+    </div>
+
+     <div class="section-content col3 
+    {{ 'text-white' if 
+              (data.options.sectionBackground.value == 'bg-primary') 
+              or (data.options.imagePosition.value == 'image-fw')
+              or data.options.isWhite.value }}">
+        
+        {{ data.fields.column3.value | safe }}
+
+        {% if data.fields.button3.value %}
+          {% for btn3 in data.fields.button3.value %}
+          {{ button(btn3) }}
+          {% endfor %}
+        {% endif %}
+    </div>
+
+  </div>
+
+</section>

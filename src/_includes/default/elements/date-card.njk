@@ -1,0 +1,58 @@
+{% if data.options.layout.value == 'table' %}
+    <div class="date date--table date--table-header">
+        <strong>{{ keydate.fields.title.value }} </strong>
+    </div>
+{% endif %}
+ {% for key in keydateData %}
+
+ {% set isPast = key.fields.date.value | expiredDate %}
+
+   {% if (displayType == 'timeline') or (displayType == 'timeline-vertical') %}
+       <div class="swiper-slide">
+    {% endif %}
+    <div class="date date--default
+        {{ 'date--card card' if 
+                            (dateTheme == 'card')
+                            or (dateTheme == 'card--fill')
+                            or (dateTheme == 'card--outline') }}
+        {{ 'white' if data.options.isWhite.value }}
+        {{ 'date--table' if dateTheme == 'table' }}
+        {{ 'date--card--fill card--fill' if dateTheme == 'card--fill' }}
+        {{ 'date--card--outline card--outline' if dateTheme == 'card--outline' }}
+        {{ 'date--table' if data.options.layout.value == 'table' }} 
+        ">
+            <div class="date-content-wrapper 
+            {{ 'card-wrapper' if (dateTheme == 'card')
+                            or (dateTheme == 'card--fill')
+                            or (dateTheme == 'card--outline') }}">
+
+                <h4 class="date-string {{ 'past' if key.fields.isPast.value or isPast }}">
+                {% if key.fields.customDate.value %}
+                    {{ key.fields.customDate.value | safe }}
+                {% else %}
+                    {{ key.fields.date.value | formatDate(dateFormat) }}
+                {% endif %}
+                </h4>
+              
+                <div class="date-title {{ 'past' if key.fields.isPast.value or isPast }}">
+                {{ key.fields.title.value | safe }}
+
+                    {% if data.options.layout.value == 'table' and key.fields.disclaimer.value %}
+                    <p class="date-desc !text-default {{ 'past' if key.fields.isPast.value }}">
+                    {{ key.fields.disclaimer.value | safe }}
+                    </p>
+                    {% endif %}
+                
+                </div>
+              
+                {% if key.fields.disclaimer.value and data.options.layout.value !== 'table' %}
+                    <p class="date-desc {{ 'past' if key.fields.isPast.value or isPast }}">
+                    {{ key.fields.disclaimer.value | safe }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    {% if (displayType == 'timeline') or (displayType == 'timeline-vertical') %}
+       </div>
+    {% endif %}
+{% endfor %}

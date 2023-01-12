@@ -1,0 +1,107 @@
+<ul class="navbar-primary_nav 
+        {{ 'navbar-primary_nav--single' if theme.siteHeader.primaryNavVariant == 'single'}}" 
+        x-bind="primarynav">
+{%- for nav in theme.siteHeader.primaryNav %}
+
+    {% if nav.children | length %}
+        <li class="navbar-primary_nav_item" x-data="dropdown">
+            <button 
+                aria-haspopup="true" 
+                class="navbar-primary_nav_link {{ 'active' if nav.href in page.url }}" 
+                x-bind="button"
+                data-href="{{ nav.href }}"
+                {% if loop.first %}
+                    x-ref="first"
+                {% endif %}>
+                <span>{{ nav.text }} 
+                    <span class="navbar-primary_nav_link__icon">
+                        <i class="{{ theme.siteHeader.navbarIcon }}"></i>
+                    </span>
+                </span>
+            </button>
+            <div class="navbar-primary_nav_menu" x-bind="content" x-transition.opacity>
+                <div class="navbar-primary_nav_menu__wrapper {{ 'programs-wrapper' if nav.programs }}">
+                    {% for child in nav.children %}
+                        {% if (child.heading) and (theme.siteHeader.primaryNavVariant !== 'single') %}
+                         <div class="navbar-primary_nav_menu__item">
+                            <h3 class="hidden offcanvas-disabled:block">{{ child.text }}</h3>
+                            {% if child.desc !== '' %}
+                            <p class="hidden offcanvas-disabled:block">{{ child.desc | safe }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% if nav.programs %}
+                        {% for p in nav.children %}
+                        <div class="navbar-primary_nav_menu__item program-item">
+                            <h3><a href="{{ p.href }}" target="{{ p.target }}">{{ p.text | safe }}</a></h3>
+                            {% if theme.siteHeader.primaryNavVariant !== 'single' %}
+                                <p class="hidden offcanvas-disabled:block">
+                                    {{ p.desc | safe }}
+                                {% if p.learnmore %}
+                                <span class="hidden offcanvas-disabled:block">
+                                    <a href="{{ p.href }}" target="{{ p.target }}" aria-label="Learn more about {{ p.text }}" class="hidden md:inline-block btn btn--tertiary">
+                                    Learn More
+                                    </a>
+                                </span>
+                                {% endif %}
+                                </p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="navbar-primary_nav_menu__item">
+                        <ul class="navbar-primary_nav_menu__item--list">
+                        {% for list in nav.children %}  
+                            {% if not list.heading %}                      
+                            <li itemprop="name" class="navbar-primary_nav_menu__item--listitem">
+                                {% if list.text !== "" %}
+                                <a href="{{ list.href | url }}" 
+                                class="navbar-primary_nav_menu__item--link {{ 'active' if list.href | replace('/','') == page.url | replace('/','') }}"
+                                target="{{ list.target }}">
+                                <span>{{ list.text | safe }}</span>
+                                </a>
+                                {% endif %}
+                                {% if list.children %}
+                                <ul class="navbar-primary_nav_menu__item--nestedlist">
+                                    {% for sub in list.children %}
+                                    <li class="navbar-primary_nav_menu__item--nestedlistitem">
+                                        <a href="{{ sub.href | url }}" 
+                                        class="navbar-primary_nav_menu__item--nestedlink {{ 'active' if sub.href | replace('/','') == page.url | replace('/','') }}"
+                                        target="{{ sub.target }}">
+                                        <span>{{ sub.text | safe }}</span>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
+                            {% endif %}
+                        {% endfor %} 
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    {% else %}
+        <li class="navbar-primary_nav_item">
+            <a class="navbar-primary_nav_link 
+                    {{ 'active' if (nav.href in page.url) and (nav.href !== '/') }}"
+                href="{{ nav.href | url }}" 
+                target="{{ nav.target }}"
+                {% if nav.href | replace('/','') == page.url | replace('/','') %} 
+                    aria-current="page"
+                {% endif %}
+
+                {% if loop.first %}
+                    x-ref="first"
+                {% endif %}>
+                <span>
+                {{ nav.text | safe }}
+                </span>
+            </a>
+        </li>
+    {% endif %}
+{%- endfor %}
+</ul>

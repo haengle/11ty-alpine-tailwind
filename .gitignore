@@ -1,0 +1,9 @@
+.cache/
+.DS_Store
+.env
+.netlify/
+.vscode
+dist/
+netlify/
+node_modules/
+yarn-error.log

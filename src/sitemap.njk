@@ -1,0 +1,18 @@
+---
+permalink: /sitemap.xml
+---
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {% for entry in entries %}
+    {%
+      if entry.fields.settings.fields.urlPath.value
+      and entry.fields.settings.fields.urlPath.value !== '/404/'
+      and entry.fields.metadata.fields.hideSearch.value !== true
+    %}
+      <url>
+        <loc>{{ build.url }}{{ entry.fields.settings.fields.urlPath.value }}</loc>
+        <lastmod>{{ entry.dateUpdated }}</lastmod>
+      </url>
+    {% endif %}
+  {% endfor %}
+</urlset>

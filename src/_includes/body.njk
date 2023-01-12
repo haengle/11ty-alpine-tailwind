@@ -1,0 +1,40 @@
+{% extends "default/layouts/default.njk" %}
+
+{% set placeholderForm %}
+  {% include 'default/elements/form-rfi.njk' %}
+{% endset %}
+
+{% from './macros/template.njk' import template with context %}
+
+{% block layoutContent %}
+
+{% include 'default/elements/include-header.njk' ignore missing %}
+ 
+<main id="main" tabindex="-1" x-bind="main" class="main" x-cloak> 
+  {% for sectionContext in entry.fields.content.fields.main.value %}
+    <section class="
+    {{ 'bg-primary text-white' if sectionContext.options.theme.value === 'primary' | default('default') }}
+    {{ 'bg-secondary text-white' if sectionContext.options.theme.value === 'secondary' | default('default') }}
+    {{ 'bg-custom' if sectionContext.options.theme.value === 'custom' | default('default') }}
+    {{ sectionContext.options.customTheme.value }}">
+      <div class="container 
+      {{ 'container--fluid' if sectionContext.options.fluidContainer.value | default('') }}
+      {{ sectionContext.options.customTheme.value }}">
+        <div class="row 
+        {{ 'cols-1' if 'cols-1' in sectionContext.options.columnCount.value }} 
+        {{ 'cols-2' if 'cols-2' in sectionContext.options.columnCount.value }} 
+        {{ 'cols-3' if 'cols-3' in sectionContext.options.columnCount.value }} 
+        {{ 'cols-4' if 'cols-4' in sectionContext.options.columnCount.value }} 
+        ">
+        {% for templateContextKey, templateContext in sectionContext.fields.content.value %}
+          {{ template(templateContext) }}
+        {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endfor %}
+</main>
+
+{% include 'default/elements/include-footer.njk' ignore missing %}
+
+{% endblock %}

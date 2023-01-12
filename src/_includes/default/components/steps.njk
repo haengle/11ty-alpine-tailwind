@@ -1,0 +1,60 @@
+{% from 'default/elements/button.njk' import button with context %}
+<section class="
+    {{ 'steps-outer section' if not isInner }} max-w-none
+    {{ data.options.customClass.value }}
+    {{ 'breakdown-columns' if data.options.theme.value == 'breakdown' }}">
+ 
+    {% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">
+      {{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+    <div class="steps-wrapper 
+        {% if data.options.theme.value == 'breakdown' %}
+            md:cols-2 
+            {{ 'xl:cols-3' if data.options.groupLayout.value == 'three' }}
+            {{ 'xl:cols-4' if data.options.groupLayout.value == 'four' }}
+        {% else %}
+            {{ 'cols-1' if data.options.groupLayout.value == 'one' }}
+            {{ 'cols-2' if data.options.groupLayout.value == 'two' }}
+            {{ 'cols-3' if data.options.groupLayout.value == 'three' }}
+            {{ 'cols-4' if data.options.groupLayout.value == 'four' }}
+        {% endif %}
+
+        {{ 'breakdown-columns' if data.options.theme.value == 'breakdown' }}        
+        {{ data.options.customClass.value }}">
+
+        {% for item in data.fields.items.value %}
+
+            <div class="steps-item 
+                {{ 'text-white' if data.options.isWhite.value }}">
+
+               <div class="steps-item-wrapper">
+
+                    <div class="steps-item-step">
+                        <span>{{ item.fields.step.value }}</span>
+                    </div>
+                
+                    <div class="steps-item-label">
+                        {{ item.fields.stepLabel.value }}
+                    </div>
+               
+                    <div class="steps-item-content">
+                        {% if item.fields.content.value %}
+                        {{ item.fields.content.value | safe }}
+                        {% endif %}
+
+                        {% if item.fields.buttons.value %}
+                            <div class="steps-item-buttons-wrapper">
+                            {% for btn in item.fields.buttons.value %}
+                                {{ button(btn) }}
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>

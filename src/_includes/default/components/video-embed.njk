@@ -1,0 +1,27 @@
+<section class="video-embed-wrapper
+{{ 'section block' if not isInner }}
+  {{ data.options.customClass.value }}">
+
+     {% if data.options.hideTitle.value == false %}
+        <h2 class="{{ 'text-center' if data.options.centerTitle.value }}">
+             {{ data.fields.title.value | safe }}
+        </h2>
+    {% endif %}
+
+    {% if data.fields.description.value !== '' %}
+    <p class="video-embed-desc">
+    {{ data.fields.description.value | safe }}
+    </p>
+    {% endif %}
+
+    {% set vidRatio = data.options.videoRatio.value %}
+    <div class="ratio 
+    {{ 'ratio-16x9' if vidRatio == '16x9' }}
+    {{ 'ratio-4x3' if vidRatio == '4x3' }}
+    {{ 'ratio-1x1' if vidRatio == '1x1' }}">
+
+    {{ data.fields.video.value | safe }}
+
+    </div>
+    
+</section>

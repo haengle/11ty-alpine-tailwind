@@ -1,0 +1,11 @@
+<nav class="nav-footer" aria-label="footer">
+<ul>
+{%- for link in theme.siteFooter.footerNav %}
+<li class="nav-footer_nav_item">
+    <a class="nav-footer_nav_link" href="{{ link.href | url }}" target="{{ link.target }}">
+        <span>{{ link.text | safe }}</span>
+    </a>
+</li>
+{%- endfor %}
+</ul>
+</nav>

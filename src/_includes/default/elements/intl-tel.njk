@@ -1,0 +1,18 @@
+<div class="text-left relative">
+     <label
+            class="hidden"
+            for="field_{{ field.name }}-{{ uniqueFormId }}">
+            {{ field.label }}
+        </label>
+     <input 
+       type="tel" 
+        class="form-input form-input-intl" 
+        x-bind="input"
+        x-init="initPhone()"
+        x-ref="phone"
+        placeholder="{{ field.label }}" 
+        id="field_{{ field.name }}-{{ uniqueFormId }}"
+        name="field_{{ field.name }}-{{ uniqueFormId }}"
+        @blur="checkPhone()"
+        >
+</div>

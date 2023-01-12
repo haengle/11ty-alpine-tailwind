@@ -1,0 +1,141 @@
+{% macro pagination(
+    data,
+    label,
+    perPage = 8
+) %}
+
+ <div class="row" x-show="pageCount() > 1">
+        <nav aria-label="{{ label }} pagination" class="nav-pagination">
+            <ul>
+                <li class="nav-pagination_item">
+                 <button
+                    @click="prevPage, $nextTick(() => $scroll($refs.pageTop, {offset: $refs.navbar.offsetHeight}))"
+                    :disabled="pageNumber==0"
+                    class="nav-pagination_link arrow"
+                    :class="{ 'inactive' : pageNumber==0 }"
+                    >
+                    &lsaquo;
+                   </button>
+                </li>
+                <template x-for="(page,index) in pages()" :key="index">
+                    <li class="nav-pagination_item">
+                    <button
+                        :data-hash="index + 1"
+                        class="nav-pagination_link"
+                        :class="{ 'active' : index === pageNumber }"
+                        type="button"
+                        x-init="$nextTick(() => { 
+                            let tabTarget = window.location.hash.substring(1);
+                            let dataHash = $el.dataset.hash;
+                            if (tabTarget && dataHash && dataHash === tabTarget) {
+                                $el.click();
+                            }
+                        })"
+                        @click="viewPage(index), $nextTick(() => $scroll($refs.pageTop, {offset: $refs.navbar.offsetHeight}))"
+                    >
+                        <span x-text="index+1"></span>
+                    </button>
+                    </li>
+                </template>
+                <li class="nav-pagination_item">
+                 <button
+                    @click="nextPage, $nextTick(() => $scroll($refs.pageTop, {offset: $refs.navbar.offsetHeight}))"
+                    :disabled="pageNumber >= pageCount() -1"
+                    class="nav-pagination_link arrow"
+                    :class="{ 'inactive' : pageNumber >= pageCount() -1 }"
+                    >
+                    &rsaquo;
+                   </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+<script>
+        const dataToPaginate = {{ data | safe }}
+
+        function loadPagination() {
+
+        return {
+          search: "",
+          pageNumber: 0,
+          size: {{ perPage }},
+          total: "",
+          allData: dataToPaginate,
+
+          get filteredNews() {
+            const start = this.pageNumber * this.size,
+              end = start + this.size;
+
+            if (this.search === "") {
+              this.total = this.allData.length;
+              return this.allData.slice(start, end);
+            }
+
+            //Return the total results of the filters
+            this.total = this.allData.filter((item) => {
+              return item.title
+                .toLowerCase()
+                .includes(this.search.toLowerCase());
+            }).length;
+
+            //Return the filtered data
+            return this.allData
+              .filter((item) => {
+                return item.title
+                  .toLowerCase()
+                  .includes(this.search.toLowerCase());
+              })
+              .slice(start, end);
+          },
+
+          //Create array of all pages (for loop to display page numbers)
+          pages() {
+            return Array.from({
+              length: Math.ceil(this.total / this.size),
+            });
+          },
+
+          //Next Page
+          nextPage() {
+            this.pageNumber++;
+            window.location.hash = this.pageNumber + 1;
+          },
+
+          //Previous Page
+          prevPage() {
+            this.pageNumber--;
+            window.location.hash = this.pageNumber + 1;
+          },
+
+          //Total number of pages
+          pageCount() {
+            return Math.ceil(this.total / this.size);
+          },
+
+          //Return the start range of the paginated results
+          startResults() {
+            return this.pageNumber * this.size + 1;
+          },
+
+          //Return the end range of the paginated results
+          endResults() {
+            let resultsOnPage = (this.pageNumber + 1) * this.size;
+
+            if (resultsOnPage <= this.total) {
+              return resultsOnPage;
+            }
+
+            return this.total;
+          },
+
+          //Link to navigate to page
+          viewPage(index) {
+            this.pageNumber = index;
+            window.location.hash = index + 1;
+          },
+        };
+      }
+    </script>
+
+{% endmacro %}

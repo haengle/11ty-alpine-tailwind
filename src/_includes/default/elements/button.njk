@@ -1,0 +1,40 @@
+{% macro button(data) %}
+
+<{{ data.fields.buttonType.value|default("a") }} 
+{% if data.fields.buttonType.value == "a" %}
+  role="button"
+{% endif %}
+  class="btn 
+  {{ 'btn--primary' if data.options.theme.value == 'primary' }} 
+  {{ 'btn--secondary' if data.options.theme.value == 'secondary' }} 
+  {{ 'btn--tertiary' if data.options.theme.value == 'tertiary' }} 
+  {{ 'white' if data.options.isWhite.value }} 
+  {{ data.options.customClass.value }}" 
+{% if data.fields.linkUrl.value %}
+  href="{{ data.fields.linkUrl.value }}"
+{% endif %}
+{% if data.fields.ariaLabel.value %}
+  aria-label="{{ data.fields.ariaLabel.value }}"
+{% endif %}
+{% if data.fields.linkTarget.value == "_blank" %}
+  target="_blank"
+  rel="noopener"
+{% endif %}
+{% if data.fields.buttonId.value %}
+  id="{{ data.fields.buttonId.value }}"
+{% endif %}
+{% if data.fields.buttonAction.value == "reqInfo" %}
+  @click="$dispatch('open-modal', {modalId: 'reqInfo'})"
+  {% if data.fields.buttonId.value == "" %}
+    {% set buttonId = 'reqInfo' | uniqueAlphaKey %}
+      id="{{ buttonId }}"
+  {% endif %}
+{% endif %}
+{% if data.fields.buttonAction.value == "custom" %}
+  @click="{{ data.fields.customButtonAction.value }}"
+{% endif %}
+>
+  {{ data.fields.label.value | safe }}
+
+</{{ data.fields.buttonType.value|default("a") }}>
+{% endmacro %}

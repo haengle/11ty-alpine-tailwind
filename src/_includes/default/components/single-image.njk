@@ -1,0 +1,23 @@
+<section class="single-image-wrapper
+{{ 'section py-0 block' if not isInner }}
+  {{ data.options.customClass.value }}">
+
+    {% set maxWidth = data.fields.maxWidth.value | int %}
+
+  {% if data.fields.link.value %}
+    <a href="{{ data.fields.link.value }}" title="{{ data.fields.linkTitle.value }}">
+  {% endif %}
+
+         <img 
+            {% if data.options.imageRatio.value == 'portrait' %}
+              src="{{ data.fields.image.value | getAssetUrl }}?w={{ maxWidth | default('320') }}&ar=2.25:3&fit=clip&auto=format"
+            {% elif data.options.imageRatio.value == 'square' %}
+              src="{{ data.fields.image.value | getAssetUrl }}?w={{ maxWidth | default('320') }}&ar=1:1&fit=clip&auto=format"
+            {% else %}
+              src="{{ data.fields.image.value | getAssetUrl }}?w={{ maxWidth | default('320') }}&ar=4:2.5&fit=clip&auto=format"
+            {% endif %}
+            alt="{{ data.fields.image.value.description|default(" ") }}">
+    {% if data.fields.link.value %}
+    </a>
+    {% endif %}
+</section>

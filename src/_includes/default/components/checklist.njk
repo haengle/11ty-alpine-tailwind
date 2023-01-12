@@ -1,0 +1,32 @@
+<section class="checklist 
+{{ 'checklist--default' if data.options.layout.value == 'default' }} 
+{{ 'checklist--twocolumns' if data.options.layout.value == 'twocolumns' }} 
+{{ 'white' if data.options.isWhite.value }}
+{{ data.options.customClass.value }}">
+
+    {% if data.options.hideTitle.value == false %}
+    <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+    {{ 'text-white' if data.options.isWhite.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+    <ul>
+    {% for item in data.fields.items.value %}
+        <li class="checklist-item">
+            {% if data.options.icon.value == 'custom' %}
+            {{ data.options.customIcon.value | safe }}
+            {% else %}
+            <i class="fas fa-circle-arrow-right fa-fw"></i>
+            {% endif %}
+
+            {% if item.fields.itemTitle.value %}
+                <span class="checklist-item-title">{{item.fields.itemTitle.value | safe}}</span>
+            {% endif %}
+            {% if item.fields.description.value %}
+                <div class="checklist-item-details">
+                    {{ item.fields.description.value | safe }}
+                </div>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+</section>

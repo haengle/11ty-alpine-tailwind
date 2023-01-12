@@ -1,0 +1,16 @@
+<nav class="nav-social nav-social--default" 
+    aria-label="Social media">
+<ul>
+
+ {%- for key, value in theme.site.socialLinks -%}
+    <li class="nav-social_nav_item">
+        <a class="nav-social_nav_link" 
+            href="{{ value.href | url }}" 
+            title="Find us on {{ value.text }}" target="_blank" rel="noopener">
+            <i class="fab fa-{{ value.icon }}"></i>
+        </a>
+    </li>
+    {%- endfor -%}
+
+</ul>
+</nav>

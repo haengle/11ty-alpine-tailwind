@@ -1,0 +1,54 @@
+<div class="date-group-wrapper 
+{{ data.options.customClass.value }} 
+{{ 'white' if data.options.isWhite.value }}">
+  
+    <div class="date-tag">
+        <span>{{ data.fields.title.value | safe }}</span>
+    </div>
+
+    <div class="date-wrapper 
+    {{ 'date-wrapper--stack' if data.options.layout.value == 'stack' }} 
+    {{ 'date-wrapper--horizontal' if data.options.layout.value == 'horizontal' }} 
+    {{ data.options.customClass.value }}">
+
+    {% for item in data.fields.group.value %}
+
+         <div class="date 
+        {{ 'date--card card' if 
+                            (data.options.theme.value == 'card')
+                            or (data.options.theme.value == 'card--fill')
+                            or (data.options.theme.value == 'card--outline') }}
+        {{ 'white' if data.options.isWhite.value }}
+        {{ 'date--card--fill card--fill' if data.options.theme.value == 'card--fill' }}
+        {{ 'date--card--outline card--outline' if data.options.theme.value == 'card--outline' }}
+        ">
+            <div class="date-content-wrapper 
+            {{ 'card-wrapper' if (data.options.theme.value == 'card')
+                            or (data.options.theme.value == 'card--fill')
+                            or (data.options.theme.value == 'card--outline') }}">
+
+                <h4 class="date-string {{ 'past' if item.fields.isPast.value }}">
+                {% if item.fields.customDate.value %}
+                    {{ item.fields.customDate.value | safe }}
+                {% else %}
+                    {{ item.fields.date.value.datetime | prettyDate }}
+                {% endif %}
+                </h4>
+              
+                <div class="date-title {{ 'past' if item.fields.isPast.value }}">
+                {{ item.fields.title.value | safe }}
+                </div>
+              
+                {% if item.fields.disclaimer.value %}
+                <p class="date-desc {{ 'past' if item.fields.isPast.value }}">
+                {{ item.fields.disclaimer.value | safe }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+
+    {% endfor %}
+    </div>
+
+</div>

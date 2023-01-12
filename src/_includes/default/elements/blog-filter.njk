@@ -1,0 +1,75 @@
+{% set theCategory = page.url.split('/category') %}
+{% set theBlog = theCategory[0].replace('/','').replace('/','') %}
+{% set filterId = "blog-filter" | uniqueAlphaKey %}
+
+ {% if 'category' in page.url %}
+    {% set defaultText = 'Category: <strong>' ~ theCategory | last | replace('/','') | replace('-', ' ') | capitalize ~ '</strong>' %}
+ {% else %}
+    {% set defaultText = 'Filter by category' %}
+ {% endif %}
+
+{% set filterCategories = [] %}
+
+{% for p in collections.posts | filterResults('url', theBlog) %}
+
+{% set postCats = p.fields.content.fields.main.fields.categories.value %}
+    {% for cat in postCats.split(',') %}
+    {% if (cat | trim | lower not in filterCategories) and (cat | length > 1) %}
+     {% set filterCategories = (filterCategories.push(cat | trim | lower), filterCategories) %}
+    {% endif %}
+    {% endfor %}
+{% endfor %}
+
+ <div class="toggle-dropdown-wrapper blog-filter"
+ x-data="{
+     defaultText: '{{ defaultText | safe }}'
+ }">
+
+        <div x-data="dropdown">
+            <div class="toggle-dropdown-label hidden" 
+            id="{{ filterId }}">Filter by category</div>
+
+            <div class="toggle-dropdown-select">
+                <button 
+                    class="toggle-dropdown-listbox-button" 
+                    aria-haspopup="listbox" 
+                    aria-labelledby="{{ filterId }}" 
+                    x-bind="button">
+                
+                <div class="toggle-dropdown-default-value" x-html="defaultText"></div>
+                <i class="far fa-chevron-down"></i>
+                </button>
+
+                <ul class="toggle-dropdown-listbox" 
+                    role="listbox" 
+                    id="{{ filterId }}-list" 
+                    tabindex="-1" 
+                    x-bind="content">
+                
+                {% for cat in filterCategories %}
+                    <li class="toggle-dropdown-option capitalize" 
+                        id="{{ filterId }}-option{{ loop.index }}" 
+                        role="option">
+                        <a 
+                            class="toggle-dropdown-option_btn" 
+                            href="/{{ theBlog }}/category/{{ cat | slugify }}/"
+                            >
+                        {{ cat | capitalize }}
+                        </a>
+                    </li>       
+                {% endfor %}
+                {% if 'category' in page.url %}
+                <li class="toggle-dropdown-option" 
+                        role="option">
+                        <a 
+                            class="toggle-dropdown-option_btn" 
+                            href="/{{ theBlog }}"
+                            >
+                        View All
+                        </a>
+                    </li>   
+                {% endif %}
+                </ul>
+        </div>
+</div>
+</div>

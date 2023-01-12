@@ -1,0 +1,95 @@
+{% set carouselType = 'faculty' %}
+
+{% set cardTheme = data.options.theme.value %}
+{% set navPos = data.options.navigationPosition.value %}
+{% set imageTheme = data.options.imageTheme.value %}
+
+{% from 'default/elements/button.njk' import button with context %}
+
+<div class="carousel-outer">
+
+    {% if not data.options.hideTitle.value %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+  <div class="carousel 
+        swiper 
+        carousel-{{ carouselType }} 
+        {{ data.options.customClass.value }}" 
+        x-carousel.horizontal="{{ data.fields.view.value }}">
+
+
+    {% if not data.options.disablePagination.value %}
+    <div class="swiper-pagination"></div>
+    {% endif %}
+    {% if not data.options.disableNavigation.value %}
+       <div class="swiper-navigation-wrapper 
+        {{ 'swiper-navigation--default' if navPos == 'default' }}
+        {{ 'swiper-navigation--left' if navPos == 'left' }}
+        {{ 'swiper-navigation--center' if navPos == 'center' }}
+        {{ 'swiper-navigation--bottom' if navPos == 'bottom' }}
+        {{ 'swiper-navigation--bottom-center' if navPos == 'bottom-center' }}
+        ">
+        <div class="swiper-button-prev">
+            <i class="far fa-chevron-left"></i>
+        </div>
+        <div class="swiper-button-next">
+            <i class="far fa-chevron-right"></i>
+        </div>
+       </div>
+    {% endif %}
+
+
+    <div class="carousel-wrapper swiper-wrapper">
+    
+    {% for f in data.fields.facultyItems.value %}
+     <div class="swiper-slide">
+
+            <div class="faculty 
+        {{ 'faculty--default card card--outline' if cardTheme === 'default' }} 
+        {{ 'faculty--horizontal' if cardTheme === 'horizontal' }} 
+        {{ 'faculty--default card card--fill' if cardTheme === 'card-fill' }}">
+        <div class="faculty-content-wrapper
+        {{ 'card-wrapper' if cardTheme !== 'horizontal' }} 
+        ">
+                <div class="faculty-image 
+                {{ 'img--default' if imageTheme === 'default' }}
+                {{ 'img--small-square' if imageTheme === 'small-square' }}
+                {{ 'img--small-circle' if imageTheme === 'small-circle' }}
+                {{ 'img--portrait' if imageTheme === 'portrait' }}
+                ">
+                    <img 
+                        {% if (imageTheme == 'small-square') or (imageTheme == 'small-circle') %}
+                            src="{{ f.fields.image.value | getAssetUrl }}?w=300&h=300&fit=crop&auto=format"
+                        {% elif imageTheme == 'portrait' %}
+                            srcset="{{ f.fields.image.value | getAssetUrl }}?w=640&ar=7:8&fit=crop&auto=format 640w,
+                                {{ f.fields.image.value | getAssetUrl }}?w=320&ar=7:8&fit=crop&auto=format 320w"
+                            src="{{ f.fields.image.value | getAssetUrl }}?w=640&ar=7:8&fit=crop&auto=format"
+                        {% else %}
+                            srcset="{{ f.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format 640w,
+                                {{ f.fields.image.value | getAssetUrl }}?w=320&ar=4:2.5&fit=crop&auto=format 320w"
+                            src="{{ f.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format"
+                        {% endif %}
+                            alt="{{ f.fields.image.value.description|default(" ") }}">
+                </div>
+            <div class="faculty-content text-default">
+                <h3 class="faculty-name">{{ f.fields.name.value | safe }}</h3>
+                {% if f.fields.position.value !== '' %}
+                    <h4 class="faculty-title">{{ f.fields.position.value | safe }}</h4>
+                {% endif %}
+                {% if f.fields.summary.value !== '' %}
+                    <div class="faculty-summary text-default">{{ f.fields.summary.value | safe }}</div>
+                {% endif %}
+                {% if f.fields.detailLink.value.fields !== '' %}
+                    {% for btn in f.fields.detailLink.value %}
+                     {{ button(btn) }}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    </div>
+    {% endfor %}
+  </div>
+  </div>

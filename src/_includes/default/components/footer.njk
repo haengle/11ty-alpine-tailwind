@@ -1,0 +1,72 @@
+<footer class="footer
+               {{ 'footer--default' if theme.siteFooter.footerVariant == 'default' }}
+               {{ 'footer--stacked' if theme.siteFooter.footerVariant == 'stack' }}
+               {{ 'footer--expanded-nav' if theme.siteFooter.footerVariant == 'expanded-nav' }}
+               {{ theme.siteFooter.footerCustomClass }}" 
+                x-bind="footer">
+
+{% include 'default/elements/btn-scroll-top.njk' %}
+{% from 'default/elements/button.njk' import button with context %}
+
+    <div class="container 
+                {{ 'container--fluid' if theme.siteFooter.containerVariant == 'fluid' }}">
+        <div class="row {{ 'has-buttons' if theme.siteFooter.footerButtons | length }}">
+        
+            {% if theme.site.footerLogo %}
+            <div class="footer-logo 
+                {{ 'footer-logo--lg' if theme.siteFooter.logoVariant == 'large' }}
+                {{ 'footer-logo--default' if theme.siteFooter.logoVariant == 'default' }}">
+                {% for logo in theme.site.footerLogo %}
+                    {% if logo.link !== "" %}
+                    <a href="{{ logo.link }}" class="footer-logo-link {{ logo.class }}" target="{{ logo.target }}">
+                        <img src="{{ logo.src }}" alt="{{ logo.alt }}" class="footer-logo-img" />
+                    </a>
+                    {% elif logo.src !== "" %}
+                        <img src="{{ logo.src }}" alt="{{ logo.alt }}" class="footer-logo-img {{ logo.class }}" />
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if theme.site.contactInfo | length %}
+            <div class="footer-address">
+                {% for info in theme.site.contactInfo %}
+                    {% for name, value in info.address %}
+                        <div class="{{ name }}">{{ value | safe }}</div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            
+            <div class="footer-contact-info">
+                {% for info in theme.site.contactInfo %}
+                    {% for name, value in info.contact %}
+                        <div class="{{ name }}">{{ value | safe }}</div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% include '../elements/nav-footer.njk' %}
+
+            {% if theme.siteFooter.socialNav %}
+                {% include '../elements/nav-social.njk' %}
+            {% endif %}
+
+            {% include '../elements/nav-legal.njk' %}
+
+            {% if theme.siteFooter.footerButtons | length %}
+            <div class="footer-buttons">
+                {% for btn in theme.siteFooter.footerButtons %}
+                    {{ button(btn) }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="footer-copyright">
+                Copyright &copy; {% year %} {{ theme.site.copyrightText | safe }}
+            </div>  
+
+        </div>
+    </div>
+
+</footer>

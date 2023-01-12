@@ -1,0 +1,133 @@
+
+<div 
+    x-data="selectConfigs()" 
+    @click.away="close()">
+
+    <input 
+        class="form-select truncate"
+        x-ref="searchfield"
+        id="field_{{ field.name }}-{{ uniqueFormId }}"
+        x-bind="input"
+        type="text" 
+        x-model="filter"
+        :class="displayed ? 'focus' : ''"
+        :data-notaccept="noAccept"
+        placeholder="{{ field.label }}"
+        autocomplete="off"
+        @focus="toggle(); wasFocused = true"
+        @keyup.enter.stop.prevent="selectOption()"
+        {% if field.validations | length %}
+            @click.away="
+               if (wasFocused) {
+                    validate('{{ field.name }}', 'field_{{ field.name }}-{{ uniqueFormId }}', {{ fieldValidationsArray(field) }})
+               }
+            "
+        {% endif %}>
+             <label
+              x-bind="input"
+              class="form-label" 
+              for="field_{{ field.name }}-{{ uniqueFormId }}">
+                    {{ field.label }}
+            </label>
+     <div x-show="displayed"
+     :class="displayed ? '' : 'hidden'"
+     class="text-black divide-y 
+     overflow-y-scroll border rounded-md border-gray-300
+     w-full max-w-xs max-h-64 absolute z-50 top-full bg-white" x-ref="optionsbox">
+        <template x-for="(option, index) in filteredOptions()" :key="index">
+            <button 
+                @click="onOptionClick(index);" 
+                :aria-selected="focusedOptionIndex === index"
+                :data-notaccept="option.notAccept"
+                class="block w-full text-left p-2 text-md leading-5 cursor-pointer
+                hover:bg-primary/[0.15] focus:bg-primary/[0.15]">
+                <span x-text="option.text">
+            </button>
+
+        </template>
+     </div>
+</div>
+
+<script>
+function selectConfigs() {
+    return {
+        displayed: false,
+        filter: '',
+        selected: null,
+        focusedOptionIndex: null,
+        wasFocused: false,
+        noAccept: null,
+        options: [
+            {% for opt in field.options %}
+                {
+                    'text': '{{ opt.text }}',
+                    'value': '{{ opt.value }}',
+                    'notAccept': '{{ opt.notAccept }}'
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ],
+
+        close(){
+            this.displayed = false;
+            this.filter = this.selected ? this.selected.value : this.filter;
+            this.focusedOptionIndex = this.selected ? this.focusedOptionIndex : null;
+            this.$refs.optionsbox.style.display = 'none';
+        },
+
+        open(){
+            this.displayed = true;
+            this.filter = '';
+            this.$refs.optionsbox.style.display = 'block';
+        },
+
+        toggle() { 
+            if (this.displayed) {
+                this.close();
+            }
+            else {
+                this.open()
+            }
+        },
+
+        isOpen() { 
+            return this.displayed === true 
+        },
+
+        filteredOptions() {
+            return this.options ? this.options.filter((option) => {
+                return option.text.toLowerCase().includes(this.filter.toLowerCase()); 
+             }) : {};
+        },
+
+        onOptionClick(index) {
+            this.focusedOptionIndex = index;
+            this.selectOption();
+        },
+
+        selectOption() {
+            if (!this.isOpen()) {
+                return;
+            }
+            this.focusedOptionIndex = this.focusedOptionIndex ?? 0;
+            const selected = this.filteredOptions()[this.focusedOptionIndex];
+            
+            if (this.selected && this.selected.value == selected.value) {
+                this.filter = '';
+                this.selected = null;
+                this.noAccept = null;            
+              }
+              else {
+                this.selected = selected;
+                this.filter = this.selected ? this.selected.value : this.filter;
+                this.noAccept = selected["notAccept"];
+              }
+
+            this.close();
+        },
+
+        selectedOption() { 
+            return this.selected ? this.selected.value : this.filter; 
+        }
+    }
+}
+</script>

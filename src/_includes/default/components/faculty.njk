@@ -1,0 +1,106 @@
+{% from 'default/elements/button.njk' import button with context %}
+
+<section class="faculty-outer 
+{{ 'section' if not isInner }}
+{{ data.options.customClass.value }}">
+
+    {% set cardTheme = data.options.theme.value %}
+
+    {% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">
+      {{ data.fields.title.value | safe }}
+      </h2>
+    {% endif %}
+
+    {% if data.fields.intro.value %}
+    <div class="faculty-group-intro 
+    {{ 'text-white' if data.options.isWhite.value }}">
+    {{ data.fields.intro.value | safe }}
+    </div>
+    {% endif %}
+
+<div class="faculty-group-wrapper 
+        {{ 'faculty-group-wrapper--default' if data.options.layout.value === 'default' }} 
+        {{ 'faculty-group-wrapper--stack' if data.options.layout.value === 'stack' }} 
+        {{ 'faculty-group-wrapper--expose' if data.options.layout.value === 'expose' }} 
+        {% if data.options.layout.value == 'default' %}
+            {{ 'cols-1' if data.options.groupLayout.value == 'one' }} 
+            {{ 'cols-2' if data.options.groupLayout.value == 'two' }} 
+            {{ 'cols-3' if (data.options.groupLayout.value == 'three') or (data.options.groupLayout.value == "") }} 
+            {{ 'cols-4' if data.options.groupLayout.value == 'four' }}
+        {% endif %}">
+
+    {% for f in data.fields.items.value %}
+
+    {% set imageTheme = data.options.imageTheme.value %}
+
+   <div class="faculty 
+        {{ 'faculty--default card card--outline' if cardTheme === 'default' }} 
+        {{ 'faculty--horizontal' if cardTheme === 'horizontal' }} 
+        {{ 'faculty--default card card--fill' if cardTheme === 'card-fill' }}" 
+        data-faculty-category="{{ f.fields.category.value }}">
+        <div class="faculty-content-wrapper
+        {{ 'card-wrapper' if cardTheme !== 'horizontal' }} 
+        ">
+        {% if f.fields.image.value %}
+                <div class="faculty-image 
+                {{ 'img--default' if imageTheme === 'default' }}
+                {{ 'img--small-square' if imageTheme === 'small-square' }}
+                {{ 'img--small-circle' if imageTheme === 'small-circle' }}
+                {{ 'img--portrait' if imageTheme === 'portrait' }}
+                ">
+                {% if f.fields.overviewLink.value %}
+                <a href="{{ f.fields.overviewLink.value }}" 
+                    target="_blank" 
+                    title="Learn more about {{ f.fields.name.value }}">
+                {% endif %}
+                    
+                        <img 
+                        {% if (imageTheme == 'small-square') or (imageTheme == 'small-circle') %}
+                            src="{{ f.fields.image.value | getAssetUrl }}?w=300&h=300&fit=crop&auto=format"
+                        {% elif imageTheme == 'portrait' %}
+                            srcset="{{ f.fields.image.value | getAssetUrl }}?w=640&ar=7:8&fit=crop&auto=format 640w,
+                                {{ f.fields.image.value | getAssetUrl }}?w=320&ar=7:8&fit=crop&auto=format 320w"
+                            src="{{ f.fields.image.value | getAssetUrl }}?w=640&ar=7:8&fit=crop&auto=format"
+                        {% else %}
+                            srcset="{{ f.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format 640w,
+                                {{ f.fields.image.value | getAssetUrl }}?w=320&ar=4:2.5&fit=crop&auto=format 320w"
+                            src="{{ f.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format"
+                        {% endif %}
+                            alt="{{ f.fields.image.value.description|default(" ") }}">
+                {% if f.fields.overviewLink.value %}
+                </a>
+                {% endif %}
+                </div>
+            {% endif %}
+            <div class="faculty-content {{ 'text-white' if data.options.isWhite.value }}">
+                {% if f.fields.overviewLink.value %}
+                <a href="{{ f.fields.overviewLink.value }}" class="no-underline text-inherit" target="_blank" title="Learn more about {{ f.fields.name.value }}">
+                {% endif %}
+
+                <h3 class="faculty-name  {{ '!text-white' if data.options.isWhite.value }}">{{ f.fields.name.value | safe }}</h3>
+                {% if f.fields.position.value !== '' %}
+                    <h4 class="faculty-position {{ '!text-white' if data.options.isWhite.value }}">{{ f.fields.position.value | safe }}</h4>
+                {% endif %}
+                {% if f.fields.summary.value !== '' %}
+                    <div class="faculty-summary {{ 'text-white' if data.options.isWhite.value }}">{{ f.fields.summary.value | safe }}</div>
+                {% endif %}
+
+                {% if f.fields.overviewLink.value %}
+                </a>
+                {% endif %}
+
+                {% if f.fields.detailLink.value.fields !== '' %}
+                    {% for btn in f.fields.detailLink.value %}
+                     {{ button(btn) }}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    
+    {% endfor %}
+</div>
+</section>

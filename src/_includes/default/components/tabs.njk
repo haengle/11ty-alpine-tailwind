@@ -1,0 +1,96 @@
+{% set uniqueAlphaKey = 'tablist-' | uniqueAlphaKey %}
+
+    <div class="
+    {{ 'tablist-outer section' if not isInner }}
+    {{ data.options.customClass.value }}">
+
+   {% if data.options.hideTitle.value == false %}
+      <h2 class="
+      {{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+    <div class="tablist-wrapper 
+    {{ 'tablist--default' if data.options.theme.value == 'default' }}
+    {{ 'tablist--bubble' if data.options.theme.value == 'bubble' }}
+    {{ 'tablist--vertical' if data.options.theme.value == 'vertical' }}
+    {{ 'white' if data.options.isWhite.value }}
+    {{ data.options.customClass.value }}
+    "
+        x-data="{ tab: 'tab-1' }"
+        x-init="">
+
+
+        <ul class="tablist-nav 
+        {{ 'tablist-nav--default' if data.options.theme.value == 'default' }}
+        {{ 'tablist-nav--bubble' if data.options.theme.value == 'bubble' }}
+        {{ 'tablist-nav--vertical' if data.options.theme.value == 'vertical' }}
+        {{ 'center' if data.options.centerNav.value }}"
+            role="tablist">
+
+            {% for item in data.fields.items.value %}
+
+                {% set itemId = uniqueAlphaKey + '-' + loop.index %}
+
+                <li class="tablist-nav-item"
+                    role="presentation">
+
+                    <button class="tablist-nav-item-btn"
+                        :class="{ 'active': tab === 'tab-{{ loop.index }}' }"
+                        @click="tab = 'tab-{{ loop.index }}'"
+                        x-init="$nextTick(() => { 
+                            let tabTarget = window.location.hash.substring(1);
+                            let dataHash = $el.dataset.hash;
+                            let offsetCalc = headerHeight + 60;
+                            if (tabTarget && dataHash && dataHash === tabTarget) {
+                                $el.click();
+                                $scroll($el, {offset: offsetCalc})
+                            }
+                        })"
+                        id="{{ itemId }}"
+                        aria-controls="{{ itemId }}-content"
+                        role="tab"
+                        x-ref="tab{{ loop.index }}"
+                        data-hash="{{ item.fields.itemTitle.value | slugify }}"
+                        :aria-selected="tab === 'tab-{{ loop.index }}' ? 'true' : 'false'">
+                        {{ item.fields.itemTitle.value | safe }}
+
+                        {% if data.options.theme.value == 'vertical' %}
+                        <i class="fas fa-caret-right"></i>
+                        {% endif %}
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="
+        tablist-content-wrapper 
+        {{ 'tablist-content--default' if data.options.theme.value == 'default'  }}
+        {{ 'tablist-content--bubble' if data.options.theme.value == 'bubble' }}
+        {{ 'tablist-content--vertical' if data.options.theme.value == 'vertical' }}
+        {{ 'white' if data.options.isWhite.value }}">
+            {% for item in data.fields.items.value %}
+            
+                {% set itemId = uniqueAlphaKey + '-' + loop.index %}
+
+                <div class="tablist-pane"
+                    id="{{ itemId }}-content"
+                    role="tabpanel"
+                    aria-labelledby="{{ itemId }}"
+                    x-show="tab === 'tab-{{ loop.index }}'">
+                    
+                    {{ item.fields.content.value | safe }}
+
+                    {% set otherComponents = item.fields.components.value %}
+
+                    {% for key, value in otherComponents %}
+                        {% set isInner = true %}
+                        {% set data = value %}
+                        {% include '' + value.model.directory + '/' + value.model.type + '/' + value.model.name | lower + '.njk' ignore missing %}
+                    {% endfor %}
+                    
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    </div>

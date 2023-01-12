@@ -1,0 +1,44 @@
+
+<section class="
+{{ 'section table-outer' if not isInner }} 
+{{ data.options.customClass.value }}">
+
+{% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">
+      {{ data.fields.title.value | safe }}
+      </h2>
+{% endif %}
+
+ <div x-data="tables" class="table-wrapper 
+   {{ 'table--default' if data.options.theme.value == 'default' }}
+   {{ 'table--outline' if data.options.theme.value == 'outline' }}
+   {{ 'table--underline' if data.options.theme.value == 'underline' }} 
+
+   {{ 'table--data' if data.options.type.value == 'default' }} 
+   {{ 'table--demand' if data.options.type.value == 'demand' }} 
+   {{ 'table--earnings' if data.options.type.value == 'earnings' }} 
+   {{ 'table--compare' if data.options.type.value == 'comparison' }} 
+   {{ 'white' if data.options.isWhite.value }}
+
+   {{ 'table--striped' if data.options.isStriped.value }}
+   
+   {{ 'table--center text-center mx-auto' if data.options.centerNav.value }}"
+    
+    {% if data.fields.mobile.value %} 
+    x-bind="mobiletable"
+    {% endif %}
+
+    {% if 'demand' in data.options.type.value %}
+    x-bind="demandtable"
+    {% endif %}
+    
+    {% if 'earnings' in data.options.type.value %}
+    x-bind="earningstable"
+    {% endif %}
+    >
+    
+    {{ data.fields.table.value | safe }}
+
+ </div>
+</section>

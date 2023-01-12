@@ -1,0 +1,47 @@
+{% macro modal(
+    modalData, 
+    modalTitle, 
+    modalVariant = 'default', 
+    modalBodyVariant = modalVariant,
+    modalId = '1',
+    closeIconFill = "#000"
+    ) %}
+
+<div x-cloak x-data="modal()" 
+    @open-modal.window = "
+    if ($event.detail.modalId == '{{ modalId }}') { 
+        modalOpen = true; 
+        triggerEl = $event.target.id;
+        showModal(); 
+    }"
+    class="modal modal--{{ modalVariant }}" x-ref="modal-{{ modalId }}">
+
+    <div role="dialog"
+         aria-labelledby="modal{{ modalId }}_label"
+         aria-modal="true"
+         x-ref="dialog"
+         x-bind="dialog"
+         class="modal-dialog modal-dialog--{{ modalVariant }}">
+        <div class="modal-backdrop"
+             aria-hidden="true"
+             x-bind="backdrop"></div>
+        <div @click.stop=""
+             x-bind="modalbody"
+             class="modal-body modal-body--{{ modalBodyVariant }}">
+          <div class="modal-header">
+            <h2 id="modal{{ modalId }}_label" class="modal-header_title">{{ modalTitle }}</h2>
+            <button x-bind="closebtn"
+                    x-ref="btnClose" 
+                    aria-label="Close" 
+                    class="modal-close" style="color:{{ closeIconFill }}">
+                <i class="far fa-xmark"></i>
+            </button>
+          </div>
+          <div class="modal-body_content">
+          {{ modalData | safe }}
+          </div>
+        </div>
+    </div>
+</div>
+
+{% endmacro %}

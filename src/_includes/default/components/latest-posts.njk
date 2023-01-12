@@ -1,0 +1,36 @@
+<section class="section latest-posts-wrapper 
+{{ data.options.customClass.value }}">
+
+{% if data.options.hideTitle.value == false %}
+    <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+    {{ 'text-white' if data.options.isWhite.value }}">{{ data.fields.title.value | safe }}</h2>
+ {% endif %}
+
+<div class="blog-wrapper blog-display--list blog--{{ theme.blog.blogListVariant }}">
+
+    {% set numPosts = data.fields.numberPosts.value | default("3") | int %}
+    {% set postCat = data.fields.postCategory.value %}
+
+{% if postCat !== '' %}
+    {% for post in collections.posts %}
+        {% set cats = post.fields.content.fields.main.fields.categories.value.split(",") %}
+        {% if postCat in cats %}
+            {% set postSettings = post.fields.settings.fields %}
+            {% set postData = post.fields.content.fields.main %}
+            {% if loop.index <= (numPosts + 1) %}
+                {% include 'default/elements/blog-list.njk' ignore missing %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% else %} 
+    {% for post in collections.posts | slice(numPosts) %}
+        
+            {% set postSettings = post.fields.settings.fields %}
+            {% set postData = post.fields.content.fields.main %}
+
+            {% include 'default/elements/blog-list.njk' ignore missing %}
+   
+    {% endfor %}
+{% endif %}
+</div>
+</section>

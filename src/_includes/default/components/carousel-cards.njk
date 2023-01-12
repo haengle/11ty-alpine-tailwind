@@ -1,0 +1,157 @@
+{% if (carouselType | isUndefined) %}
+    {% set carouselType = 'card' %}
+{% endif %}
+
+{% set cardTheme = data.options.cardTheme.value %}
+{% set navPos = data.options.navigationPosition.value %}
+{% from 'default/elements/button.njk' import button with context %}
+
+<div class="carousel-outer">
+
+    {% if not data.options.hideTitle.value %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+  <div class="carousel 
+        swiper 
+        carousel-{{ carouselType }} 
+        {{ data.options.customClass.value }}" 
+        x-carousel.horizontal="{{ data.fields.view.value }}">
+
+
+    {% if not data.options.disablePagination.value %}
+    <div class="swiper-pagination"></div>
+    {% endif %}
+    {% if not data.options.disableNavigation.value %}
+       <div class="swiper-navigation-wrapper 
+        {{ 'swiper-navigation--default' if navPos == 'default' }}
+        {{ 'swiper-navigation--left' if navPos == 'left' }}
+        {{ 'swiper-navigation--center' if navPos == 'center' }}
+        {{ 'swiper-navigation--bottom' if navPos == 'bottom' }}
+        {{ 'swiper-navigation--bottom-center' if navPos == 'bottom-center' }}
+        ">
+        <div class="swiper-button-prev">
+            <i class="far fa-chevron-left"></i>
+        </div>
+        <div class="swiper-button-next">
+            <i class="far fa-chevron-right"></i>
+        </div>
+       </div>
+    {% endif %}
+
+
+    <div class="carousel-wrapper swiper-wrapper">
+    
+    {% for c in data.fields.cardItems.value %}
+     <div class="swiper-slide">
+
+            <div class="card 
+            {{ 'card--default' if (cardTheme == 'default') or
+                                (cardTheme == "") }} 
+            {{ 'card--outline' if cardTheme == 'outline' }} 
+            {{ 'card--fill' if cardTheme == 'fill' }} 
+            {{ 'card--brand' if cardTheme == 'brand' }} 
+            {{ 'card--custom' if cardTheme == 'custom' }} 
+            {{ 'card--event' if isEvent }} 
+            {{ c.options.customCardClass.value }}">
+                <div class="card-wrapper">
+                    {% if c.fields.image.value %}
+                        <div class="card-image card-image--default">
+                        <img 
+                        srcset="{{ c.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format 640w,
+                                {{ c.fields.image.value | getAssetUrl }}?w=320&ar=4:2.5&fit=crop&auto=format 320w"
+                        src="{{ c.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format"
+                        alt="{{ c.fields.image.value.description|default(" ") }}">
+                        </div>
+                    {% endif %}
+                    <div class="card-content 
+                            {{ 'text-default' if cardTheme != 'brand' }} 
+                            {{ '!text-white' if cardTheme == 'brand' }}">
+                        {% if (c.fields.category.value | length) 
+                or (c.fields.date.value !== '') 
+                or (c.fields.startDate.value !== '') 
+                or (c.fields.time.value !== '') %}
+                <div class="card-catdate-wrapper">
+
+                    {% if c.fields.category.value | length %}
+                    <div class="card-cat">
+                    {% for cat in c.fields.category.value %}
+                        <span class="{{ '!text-white' if cardTheme == 'brand' }}">
+                        {% if isEvent %}
+                            <i class="fad fa-presentation-screen fa-fw"></i>
+                        {% endif %}
+                        {{ cat }}
+                        </span>
+                    {% endfor %}
+                    </div> 
+                    {% endif %}
+                    {% if c.fields.customDate.value !== '' %}
+                    <div class="card-date">
+                        {% if isEvent %}
+                            <i class="fad fa-calendar-days fa-fw"></i>
+                        {% endif %}
+                        <span>
+                        {{ c.fields.customDate.value | safe }}
+                        </span>
+                    </div>
+                    {% elif (c.fields.date.value !== '')
+                    or (c.fields.startDate.value !== '')
+                    or (c.fields.endDate.value !== '') %}
+                    <div class="card-date">
+                        {% if isEvent %}
+                            <i class="fad fa-calendar-days fa-fw"></i>
+                        {% endif %}
+                        <span>
+                        {% if c.fields.date.value %}
+                        {{ c.fields.date.value.datetime | prettyDate }}
+                        {% endif %}
+                        {% if c.fields.startDate.value %}
+                        {{ c.fields.startDate.value.datetime | prettyDate }}
+                        {% endif %}
+                        </span>
+                        {% if c.fields.endDate.value %}
+                        <span>&ndash; {{ c.fields.endDate.value.datetime | prettyDate }}</span>
+                        {% endif %}
+                        
+                    </div>
+                    {% endif %}
+                    {% if c.fields.time.value %}
+                    <div class="card-time">
+                        <span>
+                        <i class="fad fa-clock fa-fw"></i>
+                        {{ c.fields.time.value }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+
+                            <h3 class="{{ '!text-white' if cardTheme == 'brand' }}"
+                            id="{{ 'card' | uniqueAlphaKey }}">
+                                {% if c.fields.titleLink.value %}
+                                    <a href="{{ c.fields.titleLink.value }}" class="no-underline text-current">{{ c.fields.cardTitle.value | safe }}</a></h3>
+                                {% else %}
+                                    {{ c.fields.cardTitle.value | safe }}
+                                {% endif %}
+                            </h3>
+
+                        {% if c.fields.description.value %}
+                            {{ c.fields.description.value | safe }}
+                        {% endif %}
+
+                        {% if c.fields.buttons.value %}
+                            <div class="card-buttons-wrapper">
+                            {% for btn in c.fields.buttons.value %}
+                                {{ button(btn) }}
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+    </div>
+    {% endfor %}
+  </div>
+  </div>

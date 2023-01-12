@@ -1,0 +1,20 @@
+<aside class="quick-facts 
+{{ 'financial-aid' if data.options.finAid.value }}
+{{ data.options.customClass.value }}">
+
+    {% if data.options.hideTitle.value == false %}
+    <h3 class="{{ 'text-center' if data.options.centerTitle.value }}">{{ data.fields.title.value | safe }}</h3>
+    {% endif %}
+
+    <div class="quick-facts-featured">
+        <h4 class="quick-facts-label">{{ data.fields.featuredLabel.value | safe }}</h4>
+        <div class="featured-fact-text">{{ data.fields.featuredFact.value | safe }}</div>
+    </div>
+
+    {% if data.fields.additionalFacts.value | length %}
+    <div class="quick-facts-additional">
+        <h4 class="quick-facts-label">Overview</h4>
+        {{ data.fields.additionalFacts.value | safe }}
+    </div>
+    {% endif %}
+</aside>

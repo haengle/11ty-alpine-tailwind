@@ -1,0 +1,142 @@
+{% macro fieldValidationsArray(field) %}
+[{% for validation in field.validations %}
+'{{validation}}'{% if loop.index0 < loop.length - 1 %},{% endif %}
+{% endfor %}]
+{% endmacro %}
+
+{% if not formDataSrc %}
+  {% set formDataSrc = theme.rfi %}
+{% endif %}
+
+{% if not formTitle %}
+  {% set formTitle = formDataSrc.title %}
+{% endif %}
+
+{% set uniqueFormId = '' | uniqueAlphaKey %}
+
+<div x-data="form">
+  <h2 id="formtitle-{{ uniqueFormId }}">{{ formTitle }}</h2>
+  <form class="form" @submit.prevent="submit('{{uniqueFormId}}', {{ formDataSrc | dump}})"> 
+   {% if formDataSrc.intro %}
+   <p class="form-intro">{{ formDataSrc.intro }}</p>
+   {% endif %}
+    <fieldset class="form-fieldset">
+        {% for field in formDataSrc.form.fields %}
+
+        <div class="form-item-wrapper {{ 'full' if field.full }}"
+        x-data="{ 
+          isValid: null, 
+          noAccept: null,
+          errorMsg: '', 
+          fieldId: 'field_{{ field.name }}-{{ uniqueFormId }}',
+          {% if field.controls | length %}
+          fieldControls: [
+            {% for f in field.controls %}
+            'field_{{ f }}-{{ uniqueFormId }}',
+            {% endfor %}],
+          {% endif %}
+        }"
+        {% if field.requirements | length %}
+          data-requirements="{{ field.requirements }}"
+          style="display:none"
+        {% endif %}>
+        {% if field.largeLabel %}
+          <p class="form-label-large">{{ field.largeLabel }}</p>
+        {% endif %}
+
+        <div class="form-item
+        {{ 'form-checkbox-item' if field.type == 'checkbox' }}
+        {{ 'form-radio-item' if field.type == 'radio' }}"
+        >
+        
+          {% if (field.type == 'text') 
+            or (field.type == 'email') 
+            or (field.type == 'tel') 
+            or (field.type == 'date')
+          %}
+            <input 
+              type="{{ field.type }}" 
+              class="form-input" 
+              placeholder="{{ field.label }}" 
+              id="field_{{ field.name }}-{{ uniqueFormId }}"
+              x-bind="input"
+              name="field_{{ field.name }}-{{ uniqueFormId }}"
+              {% if field.validations | length %}
+                @blur="validate('{{ field.name }}', 'field_{{ field.name }}-{{ uniqueFormId }}', {{ fieldValidationsArray(field) }})"
+              {% endif %}>
+          {% elif field.type == 'intltel' %}
+                {% include 'default/elements/intl-tel.njk' %}
+          {% elif field.type == 'select' %}
+            <select class="form-select" 
+              id="field_{{ field.name }}-{{ uniqueFormId }}"
+              x-bind="input"
+              name="field_{{ field.name }}-{{ uniqueFormId }}"
+              {% if field.validations | length %}
+                @blur="validate('{{ field.name }}', 'field_{{ field.name }}-{{ uniqueFormId }}', {{ fieldValidationsArray(field) }})"
+              {% endif %}
+              >
+              <option selected disabled value="{{undefined}}">Choose One</option>
+              {% for opt in field.options %}
+              <option 
+                value="{{ opt.value }}" 
+                data-notaccept="{{ opt.notAccept }}"
+                :selected="'{{ opt.value }}' === '{{ field.selected }}'"
+              >{{ opt.text }}</option>
+              {% endfor %}
+            </select>
+          {% elif field.type == 'textarea' %}
+            <textarea 
+              class="form-textarea" 
+              placeholder="{{ field.text }}" 
+              id="field_{{ field.name }}-{{ uniqueFormId }}"
+              x-bind="input"
+              name="field_{{ field.name }}-{{ uniqueFormId }}"
+              {% if field.validations | length %}
+                @blur="validate('{{ field.name }}', 'field_{{ field.name }}-{{ uniqueFormId }}', {{ fieldValidationsArray(field) }})"
+              {% endif %}></textarea>
+          {% elif field.type == 'checkbox' %}
+            <input class="form-checkbox" type="checkbox" value="{{ field.value }}" id="field_{{ field.name }}-{{ uniqueFormId }}"
+              x-bind="input"
+              name="field_{{ field.name }}-{{ uniqueFormId }}"
+              {% if field.validations | length %}
+                @blur="validate('{{ field.name }}', 'field_{{ field.name }}-{{ uniqueFormId }}', {{ fieldValidationsArray(field) }})"
+              {% endif %}>
+          {% elif field.type == 'radio' %}
+            <input class="form-radio" type="radio" value="{{ field.value }}" id="field_{{ field.name }}-{{ uniqueFormId }}"
+              x-bind="input"
+              name="field_{{ field.name }}-{{ uniqueFormId }}"
+              {% if field.validations | length %}
+                @blur="validate('{{ field.name }}', 'field_{{ field.name }}-{{ uniqueFormId }}', {{ fieldValidationsArray(field) }})"
+              {% endif %}>
+          {% elif field.type == 'search' %}
+            {% include 'default/elements/search-select.njk' %}
+          {% endif %}
+          {% if field.type !== 'intltel' %}
+            <label
+              x-bind="input"
+             class="form-label
+                      {{ 'hidden' if field.type == 'search' }}
+                      {{ 'form-checkbox-label' if field.type == 'checkbox' }}
+                      {{ 'form-radio-label' if field.type == 'radio' }}" 
+                    for="field_{{ field.name }}-{{ uniqueFormId }}">
+                    {{ field.label }}
+            </label>
+           {% endif %}
+            <div class="form-item-error" x-bind="message"></div>
+        </div>
+        </div>
+        {% endfor %}
+        <div class="form-item-error" x-bind="formErrorMessage"></div>
+     <div class="form-footer">
+     {% if formDataSrc.notice %}
+        <p class="form-notice">{{ formDataSrc.notice }}</p>
+    {% endif %}
+
+        <input type="submit" value="{{ formDataSrc.form.submit }}" class="form-btn form-btn--submit">
+
+        <p class="form-disclaimer">
+        {{ formDataSrc.disclaimer | safe }}
+        </p>
+        </div>
+</form>
+</div>

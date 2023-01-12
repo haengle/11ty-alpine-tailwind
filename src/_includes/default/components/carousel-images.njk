@@ -1,0 +1,86 @@
+{% if (carouselType | isUndefined) %}
+    {% set carouselType = 'custom' %}
+{% endif %}
+
+{% set navPos = data.options.navigationPosition.value %}
+
+<div class="carousel-outer">
+
+    {% if data.options.hideTitle.value == false %} 
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+  <div class="carousel 
+  swiper 
+  {{ carouselType }} 
+  {{ data.options.customClass.value }}" 
+  x-carousel.horizontal="{{ data.fields.view.value }}">
+
+
+    {% if not data.options.disablePagination.value %}
+    <div class="swiper-pagination"></div>
+    {% endif %}
+    {% if not data.options.disableNavigation.value %}
+       <div class="swiper-navigation-wrapper 
+        {{ 'swiper-navigation--default' if navPos == 'default' }}
+        {{ 'swiper-navigation--left' if navPos == 'left' }}
+        {{ 'swiper-navigation--center' if navPos == 'center' }}
+        {{ 'swiper-navigation--bottom' if navPos == 'bottom' }}
+        {{ 'swiper-navigation--bottom-center' if navPos == 'bottom-center' }}
+        ">
+        <div class="swiper-button-prev">
+            <i class="far fa-chevron-left"></i>
+        </div>
+        <div class="swiper-button-next">
+            <i class="far fa-chevron-right"></i>
+        </div>
+       </div>
+    {% endif %}
+
+    <div class="carousel-wrapper swiper-wrapper">
+        {% if carouselType == 'custom' %}
+            {% for item in data.fields.items.value %}
+             <div class="swiper-slide">
+                {% if item.fields.image.value %}
+                        <img 
+                          srcset="{{ item.fields.image.value | getAssetUrl }}?w=1600&max-h=800&fit=crop&auto=format 1600w,
+                                  {{ item.fields.image.value | getAssetUrl }}?w=800&max-h=500&fit=crop&auto=format 800w,
+                                  {{ item.fields.image.value | getAssetUrl }}?w=480&max-h=300&fit=crop&auto=format 480w"
+                          src="{{ item.fields.image.value | getAssetUrl }}?w=480&max-h=300&fit=crop&auto=format"
+                          alt="{{ item.fields.image.value.description|default(" ") }}">
+                        {% endif %}
+                <span class="caption">{{ item.fields.caption.value }}</span>
+            </div>
+            {% endfor %}
+        {% elif carouselType == 'testimonial' %}
+            {% for item in data.fields.items.value %}
+             <div class="swiper-slide">
+                <div class="testimonial {{ 'with-image' if item.fields.image.value }}">
+                    {% if item.fields.image.value %}
+                      <div class="testimonial-image {{ 'left' if data.options.imagePosition.value == 'left' }}">
+                        <img 
+                          srcset="{{ item.fields.image.value | getAssetUrl }}?max-w=600&fit=crop&auto=format 600w,
+                                  {{ item.fields.image.value | getAssetUrl }}?max-w=320&&fit=crop&auto=format 320w"
+                          src="{{ item.fields.image.value | getAssetUrl }}?max-w=320&fit=crop&auto=format"
+                          alt="{{ item.fields.image.value.description|default(" ") }}">
+                        </div>
+                    {% endif %}
+                    <div class="testimonial-content
+                    {{ 'text-left' if data.options.textAlignment.value == 'left' }}
+                    {{ 'text-right' if data.options.textAlignment.value == 'right' }}">
+                    <p>"{{ item.fields.quote.value | safe }}"</p>
+                    {% if item.fields.byline.value %}
+                    <p class="byline">{{ item.fields.byline.value | safe }}</p>
+                    {% endif %}
+                    {% if item.fields.bylineText.value %}
+                    <p class="byline-text">{{ item.fields.bylineText.value | safe }}</p>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %} 
+    </div>
+    
+  </div>
+</div>

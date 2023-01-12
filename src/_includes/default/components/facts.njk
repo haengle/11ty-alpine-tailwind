@@ -1,0 +1,64 @@
+<section class="
+    {{ 'facts-outer section' if not isInner }} max-w-none
+    {{ data.options.customClass.value }}">
+ 
+    {% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+    <div class="facts-wrapper 
+        {{ 'facts-wrapper--default' if data.options.layout.value == 'default' }}
+        {{ 'facts-wrapper--stack' if data.options.layout.value == 'stack' }}
+        {{ 'facts-wrapper--grid' if data.options.layout.value == 'grid' }}
+        {{ 'facts-wrapper--table' if data.options.layout.value == 'table' }}
+        {{ 'facts-wrapper--overview' if data.options.layout.value == 'overview' }}
+
+        {% if data.options.layout.value == 'default' %}
+            {{ 'cols-1' if data.options.groupLayout.value == 'one' }}
+            {{ 'cols-2' if data.options.groupLayout.value == 'two' }}
+            {{ 'cols-3' if data.options.groupLayout.value == 'three' }}
+            {{ 'cols-4' if data.options.groupLayout.value == 'four' }}
+        {% endif %}
+
+        {{ data.options.customClass.value }}">
+
+        {% for item in data.fields.items.value %}
+
+            <div class="facts-item 
+                {{ 'facts-item--default' if data.options.theme.value == 'default' }}
+                {{ 'facts-item--card' if data.options.theme.value == 'card' }}
+                {{ 'facts-item--card-fill' if data.options.theme.value == 'card-fill' }}
+                {{ 'facts-item--fill' if data.options.theme.value == 'fill' }}
+                {{ 'white' if data.options.isWhite.value }}">
+
+               <div class="facts-item-wrapper">
+
+                    <div class="facts-item-title {{ 'order-first' if item.fields.labelFirst.value }}">
+                        {{ item.fields.factLabel.value | safe }}
+
+                        {% if (data.options.layout.value == 'grid') or (data.options.layout.value == 'table') %}
+                            {% if item.fields.disclaimer.value !== '' %}
+                                <div class="facts-item-disclaimer">
+                                    {{ item.fields.disclaimer.value }}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                
+                    <div class="facts-item-stat">
+                        {{ item.fields.fact.value | safe }}
+                    </div>
+               
+                    {% if (data.options.layout.value == 'default') or (data.options.layout.value == 'stack') or (data.fields.layout.value == 'overview') %}
+                        {% if item.fields.disclaimer.value !== '' %}
+                            <div class="facts-item-disclaimer">
+                                {{ item.fields.disclaimer.value | safe }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>

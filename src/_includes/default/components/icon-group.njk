@@ -1,0 +1,53 @@
+{% from '../elements/button.njk' import button with context %}
+
+<section class="
+    {{ 'icon-group-outer section' if not isInner }}
+    {{ data.options.customClass.value }}
+    {{ 'max-w-none' if data.options.groupLayout.value == 'four' }} ">
+ 
+    {% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}">
+      {{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+    
+    <section class="icon-group-wrapper 
+            {{ 'cols-1' if data.options.groupLayout.value == 'one' }} 
+            {{ 'cols-2' if data.options.groupLayout.value == 'two' }} 
+            {{ 'cols-3' if (data.options.groupLayout.value == 'three') or 
+            (data.options.groupLayout.value == "") }} 
+            {{ 'cols-4' if data.options.groupLayout.value == 'four' }} 
+    {{ data.options.customClass.value }}">
+
+    {% for c in data.fields.items.value %}
+    
+        <div class="icon-group-item 
+                    {{ c.fields.customItemClass.value }}">
+            {% if c.fields.image.value %}
+                <div class="icon-group-item-image">
+                
+                <img 
+                    src="{{ c.fields.image.value | getAssetUrl }}?w=160&ar=1:1&fit=crop"
+                    alt="{{ c.fields.image.value.description|default(" ") }}">
+
+                </div>
+            {% endif %}
+            <div class="icon-group-item-content  
+                    {{ '!text-white' if data.options.isWhite.value }}">
+
+                {% if c.fields.content.value %}
+                {{ c.fields.content.value | safe }}
+                {% endif %}
+
+                {% if c.fields.buttons.value %}
+                    <div class="icon-group-buttons-wrapper">
+                    {% for btn in c.fields.buttons.value %}
+                        {{ button(btn) }}
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+    </div>
+    
+    {% endfor %}
+    </section>
+</section>

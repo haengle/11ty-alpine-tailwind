@@ -1,0 +1,19 @@
+<nav class="nav-social nav-social--share" aria-label="Share on social media">
+<ul>
+<li class="nav-social_nav_item">
+    <a class="nav-social_nav_link" href="https://facebook.com/sharer/sharer.php?u={{ build.url }}{{ page.url | url }}" title="Share on Facebook" target="_blank" rel="noopener">
+        <i class="fab fa-facebook-f"></i>
+    </a>
+</li>
+<li class="nav-social_nav_item">
+    <a class="nav-social_nav_link" href="https://twitter.com/share?text={{ postData.fields.postTitle.value }}&url={{ build.url }}{{ page.url | url }}" title="Share on Twitter" target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+    </a>
+</li>
+<li class="nav-social_nav_item">
+    <a class="nav-social_nav_link" href="https://www.linkedin.com/sharing/share-offsite/?url={{ build.url }}{{ page.url | url }}" title="Share on LinkedIn" target="_blank" rel="noopener">
+        <i class="fab fa-linkedin-in"></i>
+    </a>
+</li>
+</ul>
+</nav>

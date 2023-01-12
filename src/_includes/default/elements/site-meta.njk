@@ -1,0 +1,92 @@
+<!-- custom meta -->
+{% set base_url = build.url %}
+{% set site_name = theme.site.siteName %}
+{% set site_phone = theme.site.mainPhone %}
+{% set site_email = theme.site.mainEmail %}
+{% set site_facebook = theme.site.socialLinks.facebook.href %}
+{% set site_twitter = theme.site.socialLinks.twitter.href %}
+{% set site_twitter_handle = theme.site.socialLinks.twitter.handle %}
+{% set site_instagram = theme.site.socialLinks.instagram.href %}
+{% set site_linkedin = theme.site.socialLinks.linkedin.href %}
+{% set site_youtube = theme.site.socialLinks.youtube.href %}
+
+{% set socialArray %}
+    {%- for key, value in theme.site.socialLinks -%}
+    "{{ value.href | safe }}"{%- if not loop.last -%},{% endif %}
+    {% endfor -%}
+{% endset %}
+
+<link rel="canonical" href="{{base_url}}{{page.url}}">
+
+<script async src="https://www.googletagmanager.com/gtm.js?id={{ theme.site.gtm }}"></script>
+
+<!-- SCHEMA -->
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "{{base_url}}",
+      "logo": "{{base_url}}{{ theme.site.mainLogo }}"
+    }
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "{{entry.fields.metadata.fields.title.value}}",
+    "description": "{{entry.fields.metadata.fields.description.value}}",
+    "url": "{{base_url}}",
+    "publisher": {
+        "@type": "CollegeOrUniversity",
+        "name": "{{site_name}}"
+    }
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "EducationalOrganization",
+    "legalName": "{{site_name}}",
+    "url": "{{base_url}}",
+    "contactPoint": [
+        {
+            "@type": "ContactPoint",
+            "telephone": "{{site_phone}}",
+            "email":  "{{site_email}}",
+            "contactType": "customer service"
+        }
+    ],
+    "sameAs": [
+           {{ socialArray | safe }}
+        ]
+    }
+}
+</script>
+
+<!-- OPENGRAPH --> 
+<meta property="og:title" content="{{entry.fields.metadata.fields.title.value}}" />
+<meta property="og:description" content="{{entry.fields.metadata.fields.description.value}}" />
+<meta property="og:url" content="{{base_url}}{{page.url}}" />
+{% if entry.fields.metadata.fields.image and entry.fields.metadata.fields.image.value %}
+<meta property="og:image" content="{{entry.fields.metadata.fields.image.value | getAssetUrl}}" />
+{% else %}
+<meta property="og:image" content="{{base_url}}{{ theme.site.mainLogo }}" />
+{% endif %}
+
+<!-- TWITTER --> 
+<meta name="twitter:title" content="{{entry.fields.metadata.fields.title.value}}" />
+<meta name="twitter:description" content="{{entry.fields.metadata.fields.description.value}}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="{{site_twitter_handle}}" />
+<meta name="twitter:creator" content="{{site_twitter_handle}}" />
+{% if entry.fields.metadata.fields.image and entry.fields.metadata.fields.image.value %}
+<meta name="twitter:image" content="{{entry.fields.metadata.fields.image.value | getAssetUrl}}" />
+{% else %}
+<meta name="twitter:image" content="{{base_url}}{{ theme.site.mainLogo }}" />
+{% endif %}
+
+{% if theme.site.enableIntlPhone == true %}
+<script src="/js/custom/intlTelInput.min.js"></script>
+{% endif %}

@@ -1,0 +1,108 @@
+{% from 'default/elements/button.njk' import button with context %}
+
+<header class="header 
+               {{ 'header--default' if theme.siteHeader.headerVariant == 'default' }}
+               {{ 'header--stacked' if theme.siteHeader.headerVariant == 'stacked' }}
+               {{ 'header--logo-stacked' if theme.siteHeader.headerVariant == 'logo-stacked' }}
+               {{ theme.siteHeader.headerCustomClass }}
+               {{ 'header--sticky' if theme.siteHeader.headerSticky }}" 
+        x-bind="navbar" 
+        x-ref="navbar" 
+        x-cloak>
+  {% include 'default/elements/skip-to-content.njk' %}
+
+   {% if theme.siteHeader.actionBar | length %}
+  <div class="action-bar 
+            {{ 'action-bar--default' if theme.siteHeader.actionBarVariant == 'default' }}
+            {{ 'action-bar--right' if theme.siteHeader.actionBarVariant == 'right' }}
+            {{ 'action-bar--center' if theme.siteHeader.actionBarVariant == 'center' }}">
+    <div class="container 
+                {{ 'container--fluid' if theme.siteHeader.containerVariant == 'fluid' }}">
+        <div class="action-bar-content">
+            {% for c in theme.siteHeader.actionBar %}
+                {% if c.link | length %}
+                    {% for d in c.link %}
+                        {% if d.text !== "" %}
+                        <a href="{{ d.href }}" target="{{ d.target }}" class="action-bar-link">
+                          {{ d.text }} 
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% if c.message | length %}
+                    <div class="action-bar-message">
+                    {{ c.message | safe }}
+                    </div>
+                {% endif %}
+                {% if c.buttons | length %}
+                    <div class="action-bar-buttons offcanvas-enabled:hidden">
+                        {% for btn in c.buttons %}
+                           {{ button(btn) }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+   </div>
+   </div>
+  {% endif %}
+  
+<div class="container 
+            {{ 'container--fluid' if theme.siteHeader.containerVariant == 'fluid' }}">
+    <nav class="navbar" x-data="toggleNavbar" aria-label="Main">
+            {% include '../elements/btn-navbar-toggle.njk' %}
+            <div class="offcanvas-wrapper" x-bind="offcanvas">
+                <div class="offcanvas-backdrop" x-bind="backdrop"></div>
+
+                <a href="{{ theme.site.logoLink }}" 
+                    title="{{ theme.site.logoTitle }}" 
+                    target="{{ theme.site.logoTarget }}"
+                    class="navbar-logo" 
+                    x-bind="logo">
+
+                    <img src="{{ theme.site.mainLogo }}" 
+                    alt="{{ theme.site.mainLogoAlt }}" 
+                    class="navbar-logo-img" />
+                </a>
+
+                {% if theme.siteHeader.brandMessage !== '' %}
+                    {% if theme.siteHeader.brandMessageLink !== '' %}
+                     <a href="{{ theme.siteHeader.brandMessageLink }}" class="navbar-brand-name hidden offcanvas-disabled:block">
+                     {{ theme.siteHeader.brandMessage | safe }}
+                     </a>
+                     {% else %}
+                      <span class="navbar-brand-name hidden offcanvas-disabled:block">
+                     {{ theme.siteHeader.brandMessage | safe }}
+                     </span>
+                     {% endif %}
+                {% endif %}
+                
+                <div class="navbar-wrapper 
+                    {{ 'navbar-wrapper--right' if theme.siteHeader.navbarVariant == 'right'}}
+                    {{ 'navbar-wrapper--center' if theme.siteHeader.navbarVariant == 'center'}}" 
+                    id="navbarNavDropdown" 
+                    x-bind="offcanvas">
+           
+                       {% include '../elements/nav-primary.njk' %}
+
+                       {% if theme.siteHeader.offcanvasButtons | length %}
+                        <div class="navbar-cta hidden offcanvas-enabled:block">
+                             {% for btn in theme.siteHeader.offcanvasButtons %}
+                                {{ button(btn) }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                {% if theme.siteHeader.navbarButtons | length %}
+                    <div class="navbar-cta hidden offcanvas-disabled:block">
+                         {% for btn in theme.siteHeader.navbarButtons %}
+                            {{ button(btn) }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </nav>
+    </div>
+</header>

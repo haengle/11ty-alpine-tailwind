@@ -1,0 +1,130 @@
+{% set dateTheme = data.options.theme.value %}
+{% set dateFormat = data.options.dateFormat.value %}
+{% set dateList = collections.keydates %}
+{% set dateSource = data.fields.source.value | default('all') %}
+{% set dateFilters = [] %}
+{% set displayType = data.options.eventDisplay.value | default('list') %}
+{% set navPos = data.options.navigationPosition.value %}
+
+{% if dateSource == 'category' %}
+  {% set categoryFilters = data.fields.categorySource.value.split(',') %}
+    {% for cat in categoryFilters %}
+    {% set dateFilters = (dateFilters.push(cat | trim | lower), dateFilters) %}
+    {% endfor %}
+    
+    {% set dateList = collections.keydates | filterResults('category-date', dateFilters) %}
+{% endif %}
+
+{% if dateSource == 'named' %}
+    {% for label in data.fields.namedSource.value.split(',') %}
+    {% set dateFilters = (dateFilters.push(label | trim | lower), dateFilters) %}
+    {% endfor %}
+
+    {% set dateList = collections.keydates | filterResults('named', dateFilters) %}
+
+{% endif %}
+
+
+<section class="
+    {{ 'date-outer section max-w-none' if (displayType == 'list') and not isInner }}
+    {{ 'timeline-outer carousel-outer' if (displayType == 'timeline') or (displayType == 'timeline-vertical') }}
+    
+    {{ data.options.customClass.value }}">
+ 
+    {% if data.options.hideTitle.value == false %}
+      <h2 class="{{ 'text-center' if data.options.centerTitle.value }}
+      {{ 'text-white' if data.options.isWhite.value }}">{{ data.fields.title.value | safe }}</h2>
+    {% endif %}    
+
+    {% if displayType == 'group' %}
+    <div class="date-group-wrapper
+    {{ data.options.customClass.value }} 
+    {{ 'white' if data.options.isWhite.value }}">
+        <div class="date-tag">
+            <span>{{ data.fields.title.value | safe }}</span>
+        </div>
+        <div class="date-wrapper 
+        {{ 'date-wrapper--stack' if data.options.layout.value == 'stack' }} 
+        {{ 'date-wrapper--horizontal' if data.options.layout.value == 'horizontal' }} 
+        {{ data.options.customClass.value }}">
+    {% endif %}
+    {% if displayType == 'list' %}
+     <div class="date-wrapper 
+        {{ 'cols-1' if data.options.groupLayout.value == 'one' }} 
+        {{ 'cols-2' if data.options.groupLayout.value == 'two' }} 
+        {{ 'cols-3' if (data.options.groupLayout.value == 'three') or (data.options.groupLayout.value == "") }} 
+        {{ 'md:cols-2 lg:cols-4' if data.options.groupLayout.value == 'four' }} 
+        {{ 'date-wrapper--stack' if data.options.layout.value == 'stack' }} 
+        {{ 'date-wrapper--horizontal' if data.options.layout.value == 'horizontal' }} 
+        {{ 'date-wrapper--table' if data.options.layout.value == 'table' }} 
+        {{ data.options.customClass.value }}">
+    {% endif %}
+    {% if (displayType == 'timeline') or (displayType == 'timeline-vertical') %}
+    <div class="carousel
+        swiper
+        timeline
+        {{ 'white' if data.options.isWhite.value }}"
+        {% if displayType == 'timeline-vertical' %}
+        x-carousel.vertical="
+        {{ '1' if data.options.groupLayout.value == 'one' }} 
+        {{ '2' if data.options.groupLayout.value == 'two' }} 
+        {{ '3' if (data.options.groupLayout.value == 'three') or (data.options.groupLayout.value == "") }} 
+        {{ '4' if data.options.groupLayout.value == 'four' }}"
+        {% else %}
+        x-carousel.horizontal="
+        {{ '1' if data.options.groupLayout.value == 'one' }} 
+        {{ '2' if data.options.groupLayout.value == 'two' }} 
+        {{ '3' if (data.options.groupLayout.value == 'three') or (data.options.groupLayout.value == "") }} 
+        {{ '4' if data.options.groupLayout.value == 'four' }}"
+        {% endif %}
+    >
+    {% if not data.options.disablePagination.value %}
+    <div class="swiper-pagination"></div>
+    {% endif %}
+    {% if not data.options.disableNavigation.value %}
+       <div class="swiper-navigation-wrapper 
+        {{ 'swiper-navigation--default' if navPos == 'default' }}
+        {{ 'swiper-navigation--left' if navPos == 'left' }}
+        {{ 'swiper-navigation--center' if navPos == 'center' }}
+        {{ 'swiper-navigation--bottom' if navPos == 'bottom' }}
+        {{ 'swiper-navigation--bottom-center' if navPos == 'bottom-center' }}
+        ">
+        <div class="swiper-button-prev">
+            <i class="far fa-chevron-left"></i>
+        </div>
+        <div class="swiper-button-next">
+            <i class="far fa-chevron-right"></i>
+        </div>
+       </div>
+    {% endif %}
+    <div class="carousel-wrapper swiper-wrapper timeline-wrapper">
+    {% endif %}
+
+    {% if dateList | length > 0 %}
+         {% for keydate in dateList %}
+                
+
+                {% if (dateSource == 'all') or (dateList | length > 1) %}
+                <h3 class="mt-8 !flex-100">{{ keydate.fields.title.value }}</h3>
+                {% endif %}
+            
+                {% set keydateData = keydate.fields.content.value %}                
+                {% include 'default/elements/date-card.njk' ignore missing %} 
+
+                
+        {% endfor %}
+    
+    {% else %}  
+    <div class="flex-100">
+            {{ data.fields.emptyMessage.value | safe }}
+    </div>
+    {% endif %}
+   
+   {% if (displayType == 'timeline') or (displayType == 'timeline-vertical') %}
+    </div>
+   {% endif %}
+  </div>
+   {% if displayType == 'group' %}
+    </div>
+   {% endif %}  
+</section>

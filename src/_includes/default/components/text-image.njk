@@ -1,0 +1,162 @@
+{% from 'default/elements/button.njk' import button with context %}
+
+<section class="section 
+  {{ 'section--default' if data.options.imagePosition.value == 'default' }}
+  {{ 'section--image-bottom' if data.options.imagePosition.value == 'image-bottom' }}
+  {{ 'section--image-left' if data.options.imagePosition.value == 'image-left' }}
+  {{ 'section--image-right' if data.options.imagePosition.value == 'image-right' }}
+  {{ 'section--image-fw' if data.options.imagePosition.value == 'image-fw' }}
+  {{ 'section--image-flush-left' if data.options.imagePosition.value == 'image-flush-left' }}
+  {{ 'section--image-flush-right' if data.options.imagePosition.value == 'image-flush-right' }}
+  {{ 'section--image-flush-top' if data.options.imagePosition.value == 'image-flush-top' }}
+  {{ 'section--image-flush-bottom' if data.options.imagePosition.value == 'image-flush-bottom' }}
+
+  {{ 'bg-default' if data.options.sectionBackground.value == 'bg-default' }}
+  {{ 'bg-primary' if data.options.sectionBackground.value == 'bg-primary' }}
+  {{ 'bg-secondary' if data.options.sectionBackground.value == 'bg-secondary' }}
+  {{ 'bg-custom' if data.options.sectionBackground.value == 'bg-custom' }}
+
+  {{ data.options.customSectionBackground.value }}
+  {{ data.options.customClass.value }}">
+
+  {% if (data.options.isFullWidth.value === true) or (data.options.imagePosition.value == 'image-fw') %}
+    <div class="fw-wrapper 
+    {{ 'full-bleed relative md:absolute' if data.options.imagePosition.value != 'image-fw' }}
+    {{ 'bg-default' if data.options.sectionBackground.value == 'bg-default' }}
+    {{ 'bg-primary' if data.options.sectionBackground.value == 'bg-primary' }}
+    {{ 'bg-secondary' if data.options.sectionBackground.value == 'bg-secondary' }}
+    {{ 'bg-custom' if data.options.sectionBackground.value == 'bg-custom' }}">
+      {% if data.options.imagePosition.value == 'image-left' %}
+        <div class="bg-image md:h-full md:bg-image_50vw_left">
+        <img 
+          {% if data.options.imageRatio.value == 'portrait' %}
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=800&ar=2.25:3&fit=crop&auto=format 800w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=1600&ar=2.25:3&fit=crop&auto=format 1600w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=640&ar=2.25:3&fit=crop&auto=format 640w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=640&fit=crop&auto=format"
+        {% elif data.options.imageRatio.value == 'square' %}
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=800&ar=1:1&fit=crop&auto=format 800w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=1600&ar=1:1&fit=crop&auto=format 1600w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=640&ar=1:1&fit=crop&auto=format 640w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=640&fit=crop&auto=format"
+          {% else %}
+          srcset="{{ data.fields.image.value | getAssetUrl }}?w=800&max-h=800&fit=crop&auto=format 800w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=1600&max-h=800&fit=crop&auto=format 1600w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=640&max-h=400&fit=crop&auto=format 640w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=640&fit=crop&auto=format"
+          {% endif %}
+            alt="{{ data.fields.image.value.description|default(" ") }}"
+            sizes="(min-width: 768px) 50vw, 100vw"
+            class="img--fit">
+        </div>
+      {% endif %}
+
+      {% if data.options.imagePosition.value == 'image-right' %}
+        <div class="bg-image md:h-full md:bg-image_50vw_right">
+       
+        <img 
+            {% if data.options.imageRatio.value == 'portrait' %}
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=800&ar=2.25:3&fit=crop&auto=format 800w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=1600&ar=2.25:3&fit=crop&auto=format 1600w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=640&ar=2.25:3&fit=crop&auto=format 640w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=640&fit=crop&auto=format"
+        {% elif data.options.imageRatio.value == 'square' %}
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=800&ar=1:1&fit=crop&auto=format 800w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=1600&ar=1:1&fit=crop&auto=format 1600w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=640&ar=1:1&fit=crop&auto=format 640w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=640&fit=crop&auto=format"
+        {% else %}
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=800&max-h=800&fit=crop&auto=format 800w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=1600&max-h=800&fit=crop&auto=format 1600w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=640&max-h=400&fit=crop&auto=format 640w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=640&fit=crop&auto=format"
+          {% endif %}
+            alt="{{ data.fields.image.value.description|default(" ") }}"
+            sizes="(min-width: 768px) 50vw, 100vw"
+            class="img--fit">
+        </div>
+      {% endif %}     
+
+       {% if data.options.imagePosition.value == 'image-fw' %}
+        <div class="bg-image h-full overlay overlay-black_75">
+        <img 
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=1600&max-h=800&fit=crop&auto=format 1600w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=3200&max-h=1600&fit=crop&auto=format 3200w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=640&max-h=400&fit=crop&auto=format 640w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=640&max-h=400&fit=crop&auto=format"
+            alt="{{ data.fields.image.value.description|default(" ") }}"
+            sizes="100vw"
+            class="img--fit">
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if data.fields.image.value !== '' %}
+    <div class="section-image 
+      {{ 'section--image-default' if data.options.imagePosition.value == 'default' }}
+      {{ 'section--image-bottom' if data.options.imagePosition.value == 'image-bottom' }}
+      {{ 'section--image-left' if data.options.imagePosition.value == 'image-left' }}
+      {{ 'section--image-right' if data.options.imagePosition.value == 'image-right' }}
+      {{ 'section--image-flush-left' if data.options.imagePosition.value == 'image-flush-left' }}
+      {{ 'section--image-flush-right' if data.options.imagePosition.value == 'image-flush-right' }}
+      {{ 'section--image-flush-top' if data.options.imagePosition.value == 'image-flush-top' }}
+      {{ 'section--image-flush-bottom' if data.options.imagePosition.value == 'image-flush-bottom' }}">
+
+      {% if (data.options.imagePosition.value != 'image-fw') and (data.options.isFullWidth.value === false) %}
+         <img 
+            {% if data.options.imageRatio.value == 'portrait' %}
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=640&ar=2.25:3&fit=crop&auto=format 640w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=320&ar=2.25:3&fit=crop&auto=format 320w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=320&ar=2.25:3&fit=crop&auto=format 320w"
+            {% elif data.options.imageRatio.value == 'square' %}
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=640&ar=1:1&fit=crop&auto=format 640w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=320&ar=1:1&fit=crop&auto=format 320w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=320&ar=1:1&fit=crop&auto=format 320w"
+            {% else %}
+            srcset="{{ data.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format 640w,
+                    {{ data.fields.image.value | getAssetUrl }}?w=320&ar=4:2.5&fit=crop&auto=format 320w"
+            src="{{ data.fields.image.value | getAssetUrl }}?w=320&ar=4:2.5&fit=crop&auto=format 320w"
+            {% endif %}
+            alt="{{ data.fields.image.value.description|default(" ") }}"
+            {% if data.options.imageMaxWidth.value | int %}
+            style="width:{{ data.options.imageMaxWidth.value | int }}px"
+            {% endif %}>
+      {% else %}
+        <span class="spacer"></span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="section-content relative z-10
+    {{ data.options.contentBackground.value }}
+    {{ data.options.customContentBackground.value }}
+    {{ 'text-white' if 
+              (data.options.contentBackground.value == 'bg-primary') 
+              or (data.options.sectionBackground.value == 'bg-primary') 
+              or (data.options.imagePosition.value == 'image-fw')
+              or data.options.isWhite.value }}
+    {{ 'p-default' if data.options.contentBackground.value != 'bg-default' }}">
+    
+    {% if data.options.hideTitle.value === false %}
+      <h2 class="{{ 'text-white' if 
+              (data.options.contentBackground.value == 'bg-primary') 
+              or (data.options.sectionBackground.value == 'bg-primary') 
+              or (data.options.imagePosition.value == 'image-fw')
+              or data.options.isWhite.value }}
+              relative
+              {{ 'text-center' if data.options.centerTitle.value }}">
+              {{ data.fields.title.value | safe }}</h2>
+    {% endif %}
+
+    {{ data.fields.content.value | safe }}
+
+    {% if data.fields.buttons.value %}
+      <div class="section-buttons-wrapper">
+        {% for btn in data.fields.buttons.value %}
+          {{ button(btn) }}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>

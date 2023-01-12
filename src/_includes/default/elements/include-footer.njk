@@ -1,0 +1,10 @@
+{% set footerContext = entry.fields.content.fields.footerTemp.value %}
+
+    {% if footerContext == 'default' %}
+      {% include 'default/components/footer.njk' %}
+    {% elif footerContext == 'custom' %}
+      {% include 'theme/components/footer.njk' ignore missing %}
+    {% elif footerContext == 'none' %}
+      {# no footer #}
+    {% endif %}
+

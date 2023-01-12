@@ -1,0 +1,35 @@
+<article class="blog-list-item blog-list-item--{{ theme.blog.blogListVariant }}">
+       <div class="blog-list-item-wrapper">
+           {% if postData.fields.image.value %}
+            <div class="blog-list-item-image">
+                <a href="{{ postData.fields.relatedLink.value }}">
+                        <img 
+                            srcset="{{ postData.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format 640w,
+                                    {{ postData.fields.image.value | getAssetUrl }}?w=320&ar=4:2.5&fit=crop&auto=format 320w"
+                            src="{{ postData.fields.image.value | getAssetUrl }}?w=640&ar=4:2.5&fit=crop&auto=format"
+                            alt="{{ postData.fields.image.value.description|default(" ") }}">
+                        </a>
+                    </div>
+            {% endif %}
+             <div class="blog-list-item-content">
+                <div class="blog-list-item-date">
+                    {{ postData.fields.date.value.datetime | prettyDate }}
+                </div>
+                <h3><a href="{{ postData.fields.relatedLink.value }}">{{ postData.fields.relatedTitle.value | safe }}</a></h3>
+                        {% if postData.fields.description.value %}
+                            <p>{{ postData.fields.description.value }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="blog-list-item-meta">
+                        {% if postData.fields.categories.value !== "" %}
+                        <div class="blog-list-item-category">
+                            {% set cats = postData.fields.category.value.split(",") %}
+                            {% for c in cats %}
+                            <span><a href="/category/{{ c | slugify }}">{{ c }}</a></span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+</article>
+

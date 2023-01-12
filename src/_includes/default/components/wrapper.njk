@@ -1,0 +1,16 @@
+<section class="wrapper-outer {{ data.options.customClass.value }}">
+
+{% set otherComponents = data.fields.components.value %}
+
+    {% if data.options.showTitle.value %}
+        <h2 class="{{ 'text-center' if data.options.centerTitle.value }}">
+             {{ data.fields.title.value | safe }}
+        </h2>
+    {% endif %}
+
+    {% for key, value in otherComponents %}
+        {% set isInner = true %}
+        {% set data = value %}
+        {% include '' + value.model.directory + '/' + value.model.type + '/' + value.model.name | lower + '.njk' ignore missing %}
+    {% endfor %}
+ </section>

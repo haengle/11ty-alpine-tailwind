@@ -1,0 +1,11 @@
+---js
+{
+  pagination: {
+    data: "collections.posts",
+    size: 1,
+    alias: "entry"
+  },
+  permalink: "{{ entry.fields.settings.fields.urlPath.value }}/index.html"
+}
+---
+{% include 'post.njk' %}
